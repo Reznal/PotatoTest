@@ -150,7 +150,7 @@ namespace PotatoFarm.UI
                         if (success)
                         {
                             Debug.Log($"Successfully upgraded processing building {index}");
-                            RefreshProcessingList(); // Force immediate refresh
+                            RefreshProcessingList(); // Refresh only on structural change
                         }
                         else
                         {
@@ -177,7 +177,8 @@ namespace PotatoFarm.UI
                         GameManager.Instance.processingManager.StartProcessing(index);
                         Debug.Log($"Started processing building {index}");
                     }
-                    RefreshProcessingList(); // Force immediate refresh
+                    // Update only the button states, not the entire UI
+                    UpdateProcessingAffordability();
                 });
             }
             else
@@ -200,7 +201,7 @@ namespace PotatoFarm.UI
                         if (success)
                         {
                             Debug.Log($"Successfully unlocked processing building {index}");
-                            RefreshProcessingList(); // Force immediate refresh
+                            RefreshProcessingList(); // Refresh only on structural change
                         }
                         else
                         {
@@ -268,10 +269,88 @@ namespace PotatoFarm.UI
 
         private void Update()
         {
-            // Refresh processing status and affordability periodically
-            if (Time.frameCount % 60 == 0) // Every 60 frames
+            // Update processing status and affordability periodically without recreating UI
+            if (Time.frameCount % 30 == 0) // Every 30 frames
             {
-                RefreshProcessingList();
+                UpdateProcessingAffordability();
+            }
+        }
+
+        private void UpdateProcessingAffordability()
+        {
+            if (GameManager.Instance?.processingManager == null || GameManager.Instance?.resourceManager == null) return;
+
+            for (int i = 0; i < processingItems.Count; i++)
+            {
+                if (processingItems[i] == null) continue;
+
+                var building = GameManager.Instance.processingManager.GetBuilding(i);
+                if (building == null) continue;
+
+                // Find the button area
+                var buttonArea = processingItems[i].transform.Find("ButtonArea");
+                if (buttonArea == null) continue;
+
+                var buttons = buttonArea.GetComponentsInChildren<Button>();
+                
+                if (building.isUnlocked)
+                {
+                    // First button should be upgrade, second should be start/stop
+                    if (buttons.Length >= 1)
+                    {
+                        var upgradeButton = buttons[0];
+                        bool canAfford = GameManager.Instance.resourceManager.CanAfford(ResourceType.Cash, building.GetUpgradeCost());
+                        upgradeButton.interactable = canAfford;
+                        upgradeButton.GetComponent<Image>().color = canAfford ? 
+                            new Color(0.2f, 0.8f, 0.2f, 1f) : 
+                            Color.red;
+                    }
+                    
+                    if (buttons.Length >= 2)
+                    {
+                        var processButton = buttons[1];
+                        processButton.interactable = true;
+                        
+                        // Update button text and color based on processing state
+                        var buttonText = processButton.GetComponentInChildren<TextMeshProUGUI>();
+                        if (buttonText != null)
+                        {
+                            buttonText.text = building.isProcessing ? "STOP" : "START";
+                        }
+                        
+                        processButton.GetComponent<Image>().color = building.isProcessing ? 
+                            new Color(0.8f, 0.2f, 0.2f, 1f) : 
+                            new Color(0.2f, 0.8f, 0.2f, 1f);
+                    }
+                }
+                else
+                {
+                    // Only unlock button
+                    if (buttons.Length >= 1)
+                    {
+                        var unlockButton = buttons[0];
+                        bool canAfford = GameManager.Instance.resourceManager.CanAfford(ResourceType.Cash, building.cost);
+                        unlockButton.interactable = canAfford;
+                        unlockButton.GetComponent<Image>().color = canAfford ? 
+                            new Color(0.2f, 0.8f, 0.2f, 1f) : 
+                            Color.red;
+                    }
+                }
+
+                // Update progress bars for active processing
+                var progressTransform = processingItems[i].transform.Find("Progress");
+                if (progressTransform != null)
+                {
+                    var progressBar = progressTransform.Find("ProgressBar");
+                    if (progressBar != null && building.isProcessing)
+                    {
+                        var progressRect = progressBar.GetComponent<RectTransform>();
+                        if (progressRect != null)
+                        {
+                            progressRect.anchorMax = new Vector2((float)building.GetProcessingProgress(), 1f);
+                        }
+                    }
+                }
             }
         }
     }
