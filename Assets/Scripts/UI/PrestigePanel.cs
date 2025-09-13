@@ -204,8 +204,8 @@ namespace PotatoFarm.UI
             if (potatoRequirementText != null)
             {
                 double currentPotatoes = rm.GetResource(ResourceType.Potatoes);
-                bool hasEnough = currentPotatoes >= pm.potatoRequirement;
-                potatoRequirementText.text = $"Requirement: {FormatNumber(pm.potatoRequirement)} Potatoes";
+                bool hasEnough = currentPotatoes >= pm.prestigeRequirement;
+                potatoRequirementText.text = $"Requirement: {FormatNumber(pm.prestigeRequirement)} Potatoes";
                 potatoRequirementText.color = hasEnough ? 
                     new Color(0.6f, 1f, 0.6f, 1f) : 
                     new Color(1f, 0.6f, 0.6f, 1f);

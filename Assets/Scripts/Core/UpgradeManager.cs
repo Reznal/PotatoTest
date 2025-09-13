@@ -22,6 +22,16 @@ namespace PotatoFarm.Core
             return baseCost * Math.Pow(costMultiplier, level);
         }
         
+        public double GetCurrentEffect()
+        {
+            return effectValue * (level + 1); // Base effect plus level multiplier
+        }
+        
+        public bool isMaxed
+        {
+            get { return maxLevel != -1 && level >= maxLevel; }
+        }
+        
         public bool CanUpgrade()
         {
             return isUnlocked && (maxLevel == -1 || level < maxLevel);

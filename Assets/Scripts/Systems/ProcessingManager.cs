@@ -17,6 +17,8 @@ namespace PotatoFarm.Systems
         public double costMultiplier = 1.2;
         public double inputRequired; // Potatoes needed per output
         public double outputValue; // Cash per output
+        public bool isProcessing;
+        public double processingProgress; // 0.0 to 1.0
         
         public double GetProcessingSpeed()
         {
@@ -26,6 +28,35 @@ namespace PotatoFarm.Systems
         public double GetUpgradeCost()
         {
             return cost * Math.Pow(costMultiplier, level);
+        }
+        
+        public double GetEfficiency()
+        {
+            return 100.0 * (1.0 + level * 0.1); // 10% efficiency increase per level
+        }
+        
+        public string inputType
+        {
+            get { return "Potatoes"; }
+        }
+        
+        public string outputType
+        {
+            get 
+            { 
+                switch (type)
+                {
+                    case ProcessingType.Washer: return "Clean Potatoes";
+                    case ProcessingType.Fryer: return "Fried Potatoes";
+                    case ProcessingType.ChipFactory: return "Potato Chips";
+                    default: return "Processed Potatoes";
+                }
+            }
+        }
+        
+        public double GetProcessingProgress()
+        {
+            return processingProgress;
         }
     }
     
@@ -107,19 +138,36 @@ namespace PotatoFarm.Systems
             {
                 if (!building.isUnlocked || building.level <= 0) continue;
                 
-                double speed = building.GetProcessingSpeed() * processingEfficiency;
-                double itemsToProcess = speed * 0.1; // Per tick (0.1 seconds)
-                double potatoesNeeded = itemsToProcess * building.inputRequired;
-                
-                var resourceManager = GameManager.Instance.resourceManager;
-                
-                if (resourceManager.CanAfford(PotatoFarm.Core.ResourceType.Potatoes, potatoesNeeded))
+                if (building.isProcessing)
                 {
-                    resourceManager.SpendResource(PotatoFarm.Core.ResourceType.Potatoes, potatoesNeeded);
-                    double cashGained = itemsToProcess * building.outputValue;
-                    resourceManager.AddResource(PotatoFarm.Core.ResourceType.Cash, cashGained);
+                    // Update processing progress
+                    double speed = building.GetProcessingSpeed() * processingEfficiency;
+                    double progressIncrease = speed * 0.1 / 10.0; // 10 seconds to complete one cycle
+                    building.processingProgress += progressIncrease;
                     
-                    OnItemProcessed?.Invoke(building.type, (int)itemsToProcess);
+                    if (building.processingProgress >= 1.0)
+                    {
+                        building.processingProgress = 0.0;
+                        
+                        // Complete processing cycle
+                        double potatoesNeeded = building.inputRequired;
+                        var resourceManager = GameManager.Instance.resourceManager;
+                        
+                        if (resourceManager.CanAfford(PotatoFarm.Core.ResourceType.Potatoes, potatoesNeeded))
+                        {
+                            resourceManager.SpendResource(PotatoFarm.Core.ResourceType.Potatoes, potatoesNeeded);
+                            double cashGained = building.outputValue;
+                            resourceManager.AddResource(PotatoFarm.Core.ResourceType.Cash, cashGained);
+                            
+                            OnItemProcessed?.Invoke(building.type, 1);
+                        }
+                        else
+                        {
+                            // Stop processing if not enough resources
+                            building.isProcessing = false;
+                            building.processingProgress = 0.0;
+                        }
+                    }
                 }
             }
         }
@@ -171,6 +219,28 @@ namespace PotatoFarm.Systems
         public int GetBuildingCount()
         {
             return buildings.Count;
+        }
+        
+        public bool StartProcessing(int buildingIndex)
+        {
+            if (buildingIndex < 0 || buildingIndex >= buildings.Count) return false;
+            
+            var building = buildings[buildingIndex];
+            if (!building.isUnlocked || building.level <= 0) return false;
+            
+            building.isProcessing = true;
+            building.processingProgress = 0.0;
+            return true;
+        }
+        
+        public bool StopProcessing(int buildingIndex)
+        {
+            if (buildingIndex < 0 || buildingIndex >= buildings.Count) return false;
+            
+            var building = buildings[buildingIndex];
+            building.isProcessing = false;
+            building.processingProgress = 0.0;
+            return true;
         }
         
         public double GetTotalProcessingRate()
