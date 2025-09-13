@@ -145,7 +145,18 @@ namespace PotatoFarm.UI
                 {
                     upgradeButton.interactable = true;
                     upgradeButton.GetComponent<Image>().color = new Color(0.2f, 0.8f, 0.2f, 1f);
-                    upgradeButton.onClick.AddListener(() => GameManager.Instance.processingManager.UpgradeBuilding(index));
+                    upgradeButton.onClick.AddListener(() => {
+                        bool success = GameManager.Instance.processingManager.UpgradeBuilding(index);
+                        if (success)
+                        {
+                            Debug.Log($"Successfully upgraded processing building {index}");
+                            RefreshProcessingList(); // Force immediate refresh
+                        }
+                        else
+                        {
+                            Debug.Log($"Failed to upgrade processing building {index}");
+                        }
+                    });
                 }
 
                 // Start/Stop processing button
@@ -156,9 +167,16 @@ namespace PotatoFarm.UI
                 
                 processButton.onClick.AddListener(() => {
                     if (building.isProcessing)
+                    {
                         GameManager.Instance.processingManager.StopProcessing(index);
+                        Debug.Log($"Stopped processing building {index}");
+                    }
                     else
+                    {
                         GameManager.Instance.processingManager.StartProcessing(index);
+                        Debug.Log($"Started processing building {index}");
+                    }
+                    RefreshProcessingList(); // Force immediate refresh
                 });
             }
             else
@@ -176,7 +194,18 @@ namespace PotatoFarm.UI
                 {
                     unlockButton.interactable = true;
                     unlockButton.GetComponent<Image>().color = new Color(0.2f, 0.8f, 0.2f, 1f);
-                    unlockButton.onClick.AddListener(() => GameManager.Instance.processingManager.UnlockBuilding(index));
+                    unlockButton.onClick.AddListener(() => {
+                        bool success = GameManager.Instance.processingManager.UnlockBuilding(index);
+                        if (success)
+                        {
+                            Debug.Log($"Successfully unlocked processing building {index}");
+                            RefreshProcessingList(); // Force immediate refresh
+                        }
+                        else
+                        {
+                            Debug.Log($"Failed to unlock processing building {index}");
+                        }
+                    });
                 }
             }
         }

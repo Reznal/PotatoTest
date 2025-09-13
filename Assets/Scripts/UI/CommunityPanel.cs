@@ -268,7 +268,7 @@ namespace PotatoFarm.UI
             button.targetGraphic = image;
 
             var buttonLayout = buttonObj.AddComponent<LayoutElement>();
-            buttonLayout.preferredHeight = 40;
+            buttonLayout.preferredHeight = 15; // Reduced to 1/3 of original height (40/3 ≈ 13-15)
 
             var textObj = new GameObject("Text");
             textObj.transform.SetParent(buttonObj.transform, false);

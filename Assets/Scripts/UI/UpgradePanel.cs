@@ -118,7 +118,18 @@ namespace PotatoFarm.UI
             {
                 purchaseButton.interactable = true;
                 purchaseButton.GetComponent<Image>().color = new Color(0.2f, 0.8f, 0.2f, 1f);
-                purchaseButton.onClick.AddListener(() => GameManager.Instance.upgradeManager.PurchaseUpgrade(index));
+                purchaseButton.onClick.AddListener(() => {
+                    bool success = GameManager.Instance.upgradeManager.PurchaseUpgrade(index);
+                    if (success)
+                    {
+                        Debug.Log($"Successfully purchased upgrade {index}");
+                        RefreshUpgradeList(); // Force immediate refresh
+                    }
+                    else
+                    {
+                        Debug.Log($"Failed to purchase upgrade {index}");
+                    }
+                });
             }
         }
 
