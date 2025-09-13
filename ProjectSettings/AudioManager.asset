@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!11 &1
+AudioManager:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Volume: 1
+  m_Rolloff Scale: 1
+  m_Doppler Factor: 1
+  m_Default Speaker Mode: 2
+  m_Sample Rate: 44100
+  m_DSP Buffer Size: 1024
+  m_Virtual Voice Count: 512
+  m_Real Voice Count: 32
+  m_Spatializer Plugin: 
+  m_AmbisonicDecoder Plugin: 
+  m_DisableAudio: 0
+  m_VirtualizeEffects: 1
+  m_RequestedDSPBufferSize: 1024

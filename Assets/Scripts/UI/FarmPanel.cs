@@ -1,0 +1,171 @@
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using PotatoFarm.Core;
+
+namespace PotatoFarm.UI
+{
+    public class FarmPanel : MonoBehaviour
+    {
+        [Header("Farm UI")]
+        public Transform farmListParent;
+        public GameObject farmItemPrefab;
+        
+        private void Start()
+        {
+            RefreshFarmList();
+            
+            // Subscribe to events
+            if (GameManager.Instance?.farmManager != null)
+            {
+                GameManager.Instance.farmManager.OnFarmUpgraded += OnFarmUpgraded;
+            }
+        }
+        
+        private void OnDestroy()
+        {
+            if (GameManager.Instance?.farmManager != null)
+            {
+                GameManager.Instance.farmManager.OnFarmUpgraded -= OnFarmUpgraded;
+            }
+        }
+        
+        private void OnFarmUpgraded(int farmIndex)
+        {
+            RefreshFarmList();
+        }
+        
+        private void RefreshFarmList()
+        {
+            if (GameManager.Instance?.farmManager == null || farmListParent == null) return;
+            
+            // Clear existing items
+            foreach (Transform child in farmListParent)
+            {
+                Destroy(child.gameObject);
+            }
+            
+            var farmManager = GameManager.Instance.farmManager;
+            
+            for (int i = 0; i < farmManager.GetFarmCount(); i++)
+            {
+                var farm = farmManager.GetFarm(i);
+                if (farm == null) continue;
+                
+                CreateFarmItem(farm, i);
+            }
+        }
+        
+        private void CreateFarmItem(Farm farm, int index)
+        {
+            GameObject item = new GameObject($"Farm_{index}");
+            item.transform.SetParent(farmListParent, false);
+            
+            // Add background to show it's a separate item
+            var backgroundImage = item.AddComponent<Image>();
+            backgroundImage.color = new Color(0.2f, 0.2f, 0.3f, 0.8f); // Dark blue-gray background
+            
+            // The GridLayoutGroup on the parent will handle sizing (500x250)
+            // No need for LayoutElement since grid controls size
+            
+            // Use vertical layout for internal organization
+            var verticalLayout = item.AddComponent<VerticalLayoutGroup>();
+            verticalLayout.childControlWidth = true;
+            verticalLayout.childControlHeight = false;
+            verticalLayout.childForceExpandWidth = true;
+            verticalLayout.spacing = 5;
+            verticalLayout.padding = new RectOffset(15, 15, 15, 15);
+            
+            // Farm name
+            var nameText = CreateText(item, $"{farm.name}");
+            nameText.fontSize = 18;
+            nameText.fontStyle = FontStyles.Bold;
+            
+            // Farm level and production info
+            var levelText = CreateText(item, $"Level: {farm.level}");
+            var productionText = CreateText(item, $"Production: {farm.GetCurrentProduction():F1}/sec");
+            var soilText = CreateText(item, $"Soil: {farm.soilType}");
+            
+            // Button area
+            var buttonArea = new GameObject("ButtonArea");
+            buttonArea.transform.SetParent(item.transform, false);
+            
+            var buttonLayout = buttonArea.AddComponent<HorizontalLayoutGroup>();
+            buttonLayout.childControlWidth = true;
+            buttonLayout.childControlHeight = false;
+            buttonLayout.childForceExpandWidth = true;
+            buttonLayout.spacing = 10;
+            
+            if (farm.isUnlocked)
+            {
+                // Upgrade button
+                var upgradeButton = CreateButton(buttonArea, $"Upgrade\n${farm.GetUpgradeCost():F0}");
+                upgradeButton.onClick.AddListener(() => GameManager.Instance.farmManager.UpgradeFarm(index));
+                
+                // Automation status
+                var autoText = CreateText(buttonArea, farm.hasAutomation ? "Auto: ON" : "Auto: OFF");
+                autoText.color = farm.hasAutomation ? Color.green : Color.red;
+            }
+            else
+            {
+                // Unlock button
+                var unlockButton = CreateButton(buttonArea, $"Unlock\n${farm.cost:F0}");
+                unlockButton.onClick.AddListener(() => GameManager.Instance.farmManager.UnlockFarm(index));
+            }
+        }
+        
+        private TextMeshProUGUI CreateText(GameObject parent, string text)
+        {
+            var textObj = new GameObject("Text");
+            textObj.transform.SetParent(parent.transform, false);
+            
+            var textComponent = textObj.AddComponent<TextMeshProUGUI>();
+            textComponent.text = text;
+            textComponent.fontSize = 14;
+            textComponent.color = Color.white;
+            
+            // Properly configure RectTransform for text
+            var rectTransform = textObj.GetComponent<RectTransform>();
+            rectTransform.localScale = Vector3.one;
+            rectTransform.localPosition = Vector3.zero;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+            
+            return textComponent;
+        }
+        
+        private Button CreateButton(GameObject parent, string text)
+        {
+            var buttonObj = new GameObject("Button");
+            buttonObj.transform.SetParent(parent.transform, false);
+            
+            var image = buttonObj.AddComponent<Image>();
+            image.color = new Color(0.2f, 0.3f, 0.8f, 1f);
+            
+            var button = buttonObj.AddComponent<Button>();
+            button.targetGraphic = image;
+            
+            var buttonLayout = buttonObj.AddComponent<LayoutElement>();
+            buttonLayout.preferredHeight = 30;
+            
+            var textObj = new GameObject("Text");
+            textObj.transform.SetParent(buttonObj.transform, false);
+            
+            var textComponent = textObj.AddComponent<TextMeshProUGUI>();
+            textComponent.text = text;
+            textComponent.fontSize = 12;
+            textComponent.color = Color.white;
+            textComponent.alignment = TextAlignmentOptions.Center;
+            
+            var textRect = textComponent.rectTransform;
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+            
+            return button;
+        }
+    }
+}
