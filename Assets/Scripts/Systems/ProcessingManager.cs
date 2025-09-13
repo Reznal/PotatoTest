@@ -260,5 +260,63 @@ namespace PotatoFarm.Systems
             
             return totalRate * processingEfficiency;
         }
+        
+        public bool ToggleAllProcessors()
+        {
+            bool anyProcessing = false;
+            
+            // Check if any processor is currently running
+            foreach (var building in buildings)
+            {
+                if (building.isUnlocked && building.level > 0 && building.isProcessing)
+                {
+                    anyProcessing = true;
+                    break;
+                }
+            }
+            
+            // If any are processing, stop all. Otherwise, start all.
+            bool targetState = !anyProcessing;
+            
+            foreach (var building in buildings)
+            {
+                if (building.isUnlocked && building.level > 0)
+                {
+                    building.isProcessing = targetState;
+                    if (!targetState)
+                    {
+                        building.processingProgress = 0.0;
+                    }
+                }
+            }
+            
+            Debug.Log($"Toggled all processors: {(targetState ? "ON" : "OFF")}");
+            return targetState;
+        }
+        
+        public bool AreAnyProcessorsRunning()
+        {
+            foreach (var building in buildings)
+            {
+                if (building.isUnlocked && building.level > 0 && building.isProcessing)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        public int GetActiveProcessorCount()
+        {
+            int count = 0;
+            foreach (var building in buildings)
+            {
+                if (building.isUnlocked && building.level > 0 && building.isProcessing)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
     }
 }

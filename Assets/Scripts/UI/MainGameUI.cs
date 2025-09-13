@@ -29,6 +29,11 @@ namespace PotatoFarm.UI
         public TextMeshProUGUI tapPowerText;
         public Image farmImage;
         
+        [Header("Processor Control")]
+        public GameObject processorControlPanel;
+        public Button processorToggleButton;
+        public TextMeshProUGUI processorStatusText;
+        
         [Header("Navigation")]
         public GameObject navigationPanel;
         public Button farmsButton;
@@ -122,6 +127,19 @@ namespace PotatoFarm.UI
                 rect.offsetMax = Vector2.zero;
                 
                 CreateTapFarm();
+            }
+            
+            // Create processor control panel on the left side
+            if (processorControlPanel == null)
+            {
+                processorControlPanel = CreatePanel("ProcessorControlPanel", mainCanvas.transform);
+                var rect = processorControlPanel.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.05f, 0.3f);
+                rect.anchorMax = new Vector2(0.18f, 0.7f);
+                rect.offsetMin = Vector2.zero;
+                rect.offsetMax = Vector2.zero;
+                
+                CreateProcessorControl();
             }
             
             // Create navigation panel at bottom
@@ -233,6 +251,50 @@ namespace PotatoFarm.UI
             tapPowerRect.anchorMax = new Vector2(1, 0.2f);
             tapPowerRect.offsetMin = Vector2.zero;
             tapPowerRect.offsetMax = Vector2.zero;
+        }
+        
+        private void CreateProcessorControl()
+        {
+            // Use vertical layout for processor control panel
+            var layout = processorControlPanel.AddComponent<VerticalLayoutGroup>();
+            layout.childControlWidth = true;
+            layout.childControlHeight = false;
+            layout.childForceExpandWidth = true;
+            layout.spacing = 10;
+            layout.padding = new RectOffset(5, 5, 10, 10);
+            
+            // Title text
+            var titleText = CreateResourceText(processorControlPanel, "Processors");
+            titleText.fontSize = 14;
+            titleText.fontStyle = FontStyles.Bold;
+            titleText.alignment = TextAlignmentOptions.Center;
+            
+            // Toggle button
+            GameObject buttonObj = new GameObject("ProcessorToggleButton");
+            buttonObj.transform.SetParent(processorControlPanel.transform, false);
+            
+            var buttonImage = buttonObj.AddComponent<Image>();
+            buttonImage.color = new Color(0.3f, 0.6f, 0.3f, 1f); // Green when ON
+            
+            processorToggleButton = buttonObj.AddComponent<Button>();
+            processorToggleButton.targetGraphic = buttonImage;
+            processorToggleButton.interactable = true;
+            
+            // Set fixed height for button
+            var layoutElement = buttonObj.AddComponent<LayoutElement>();
+            layoutElement.preferredHeight = 60;
+            
+            // Button text
+            var buttonText = CreateResourceText(buttonObj, "ON");
+            buttonText.fontSize = 16;
+            buttonText.fontStyle = FontStyles.Bold;
+            buttonText.alignment = TextAlignmentOptions.Center;
+            
+            // Status text
+            processorStatusText = CreateResourceText(processorControlPanel, "0 Active");
+            processorStatusText.fontSize = 12;
+            processorStatusText.alignment = TextAlignmentOptions.Center;
+            processorStatusText.color = Color.yellow;
         }
         
         private void CreateNavigationButtons()
@@ -477,6 +539,12 @@ namespace PotatoFarm.UI
                 Debug.Log("Community button listener added");
             }
             
+            if (processorToggleButton != null)
+            {
+                processorToggleButton.onClick.AddListener(OnProcessorToggleClicked);
+                Debug.Log("Processor toggle button listener added");
+            }
+            
             Debug.Log("Button listeners setup complete");
         }
         
@@ -500,6 +568,7 @@ namespace PotatoFarm.UI
         {
             UpdateResourceDisplays();
             UpdateTapPowerDisplay();
+            UpdateProcessorControlDisplay();
         }
         
         private void UpdateResourceDisplays()
@@ -542,6 +611,35 @@ namespace PotatoFarm.UI
             tapPowerText.text = $"Tap Power: {FormatNumber(tapPower)}";
         }
         
+        private void UpdateProcessorControlDisplay()
+        {
+            if (GameManager.Instance?.processingManager == null) return;
+            
+            var pm = GameManager.Instance.processingManager;
+            bool anyRunning = pm.AreAnyProcessorsRunning();
+            int activeCount = pm.GetActiveProcessorCount();
+            
+            // Update button color and text
+            if (processorToggleButton != null && processorToggleButton.targetGraphic is Image buttonImage)
+            {
+                buttonImage.color = anyRunning ? 
+                    new Color(0.3f, 0.6f, 0.3f, 1f) : // Green when ON
+                    new Color(0.6f, 0.3f, 0.3f, 1f);  // Red when OFF
+                
+                var buttonText = processorToggleButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (buttonText != null)
+                {
+                    buttonText.text = anyRunning ? "ON" : "OFF";
+                }
+            }
+            
+            // Update status text
+            if (processorStatusText != null)
+            {
+                processorStatusText.text = $"{activeCount} Active";
+            }
+        }
+        
         private void OnResourceChanged(ResourceType type, double amount)
         {
             // Resources are updated in Update() method
@@ -558,6 +656,20 @@ namespace PotatoFarm.UI
             else
             {
                 Debug.LogWarning("GameManager.Instance or farmManager is null");
+            }
+        }
+        
+        private void OnProcessorToggleClicked()
+        {
+            Debug.Log("Processor toggle button clicked!");
+            if (GameManager.Instance?.processingManager != null)
+            {
+                bool newState = GameManager.Instance.processingManager.ToggleAllProcessors();
+                Debug.Log($"Processors toggled to: {(newState ? "ON" : "OFF")}");
+            }
+            else
+            {
+                Debug.LogWarning("GameManager.Instance or processingManager is null");
             }
         }
         

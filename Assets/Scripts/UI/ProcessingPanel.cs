@@ -269,8 +269,8 @@ namespace PotatoFarm.UI
 
         private void Update()
         {
-            // Update processing status and affordability periodically without recreating UI
-            if (Time.frameCount % 30 == 0) // Every 30 frames
+            // Update processing status and affordability every second (60 frames at 60 FPS)
+            if (Time.frameCount % 60 == 0) // Every 60 frames (1 second)
             {
                 UpdateProcessingAffordability();
             }
