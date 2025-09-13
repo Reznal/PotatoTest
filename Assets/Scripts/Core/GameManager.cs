@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using PotatoFarm.Systems;
 
 namespace PotatoFarm.Core
 {
@@ -18,11 +19,11 @@ namespace PotatoFarm.Core
         public FarmManager farmManager;
         
         [Header("Systems")]
-        public PotatoFarm.Systems.ProcessingManager processingManager;
-        public PotatoFarm.Systems.SaveManager saveManager;
-        public PotatoFarm.Systems.EventManager eventManager;
-        public PotatoFarm.Systems.CommunityManager communityManager;
-        public PotatoFarm.Systems.AudioManager audioManager;
+        public ProcessingManager processingManager;
+        public SaveManager saveManager;
+        public EventManager eventManager;
+        public CommunityManager communityManager;
+        public AudioManager audioManager;
         
         public event Action OnGameTick;
         
@@ -50,25 +51,25 @@ namespace PotatoFarm.Core
         {
             // Initialize all managers
             if (resourceManager == null)
-                resourceManager = gameObject.AddComponent<ResourceManager>();
+                resourceManager = GetOrAddComponent<ResourceManager>();
             if (upgradeManager == null)
-                upgradeManager = gameObject.AddComponent<UpgradeManager>();
+                upgradeManager = GetOrAddComponent<UpgradeManager>();
             if (prestigeManager == null)
-                prestigeManager = gameObject.AddComponent<PrestigeManager>();
+                prestigeManager = GetOrAddComponent<PrestigeManager>();
             if (farmManager == null)
-                farmManager = gameObject.AddComponent<FarmManager>();
+                farmManager = GetOrAddComponent<FarmManager>();
                 
             // Initialize all systems
             if (processingManager == null)
-                processingManager = gameObject.AddComponent<PotatoFarm.Systems.ProcessingManager>();
+                processingManager = GetOrAddComponent<ProcessingManager>();
             if (saveManager == null)
-                saveManager = gameObject.AddComponent<PotatoFarm.Systems.SaveManager>();
+                saveManager = GetOrAddComponent<SaveManager>();
             if (eventManager == null)
-                eventManager = gameObject.AddComponent<PotatoFarm.Systems.EventManager>();
+                eventManager = GetOrAddComponent<EventManager>();
             if (communityManager == null)
-                communityManager = gameObject.AddComponent<PotatoFarm.Systems.CommunityManager>();
+                communityManager = GetOrAddComponent<CommunityManager>();
             if (audioManager == null)
-                audioManager = gameObject.AddComponent<PotatoFarm.Systems.AudioManager>();
+                audioManager = GetOrAddComponent<AudioManager>();
         }
         
         private void GameTick()
@@ -87,6 +88,16 @@ namespace PotatoFarm.Core
         public void ResumeGame()
         {
             isGameActive = true;
+        }
+
+        private T GetOrAddComponent<T>() where T : Component
+        {
+            if (!TryGetComponent<T>(out var component))
+            {
+                component = gameObject.AddComponent<T>();
+            }
+
+            return component;
         }
     }
 }

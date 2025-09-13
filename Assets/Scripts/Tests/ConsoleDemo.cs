@@ -1,3 +1,4 @@
+using PotatoFarm.Core;
 using UnityEngine;
 
 namespace PotatoFarm.Tests

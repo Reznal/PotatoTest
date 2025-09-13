@@ -20,7 +20,6 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientMode: 0
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
@@ -105,7 +104,7 @@ NavMeshSettings:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_BuildSettings:
-    serializedVersion: 2
+    serializedVersion: 3
     agentTypeID: 0
     agentRadius: 0.5
     agentHeight: 2
@@ -118,7 +117,7 @@ NavMeshSettings:
     cellSize: 0.16666667
     manualTileSize: 0
     tileSize: 256
-    accuratePlacement: 0
+    buildHeightMesh: 0
     maxJobWorkers: 0
     preserveTilesOutsideBounds: 0
     debug:
@@ -157,13 +156,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1234567890}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1234567892
 MonoBehaviour:
@@ -177,6 +176,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a8c7b5d8e9f0123456789abcdef0123, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isGameActive: 1
+  gameTime: 0
+  resourceManager: {fileID: 0}
+  upgradeManager: {fileID: 0}
+  prestigeManager: {fileID: 0}
+  farmManager: {fileID: 0}
+  processingManager: {fileID: 0}
+  saveManager: {fileID: 0}
+  eventManager: {fileID: 0}
+  communityManager: {fileID: 0}
+  audioManager: {fileID: 0}
 --- !u!114 &1234567893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,9 +196,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 1234567890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48c32495d8124e68910c9fbb0123, type: 3}
+  m_Script: {fileID: 11500000, guid: 754d7d81b8433ef488ffc671aaa975bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resources:
+    potatoes: 0
+    cash: 100
+    starch: 0
+    goldenPotatoes: 0
+    potatoRate: 0
+    cashRate: 0
+    starchRate: 0
+  maxPotatoes: 1000000000000
+  maxCash: 1000000000000000
+  maxStarch: 1000000000
+  maxGoldenPotatoes: 1000000
 --- !u!114 &1234567894
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,9 +220,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1234567890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66d936c185244acf886510b40123, type: 3}
+  m_Script: {fileID: 11500000, guid: a58545222a1b8834f826ed8a7679fa69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  upgrades: []
 --- !u!114 &1234567895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -210,9 +233,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1234567890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 865c8d3a563e45ff8e23954a0123, type: 3}
+  m_Script: {fileID: 11500000, guid: ddbeb41c66bce5940853cad3ed85de3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prestigeData:
+    totalPrestiges: 0
+    totalStarchEarned: 0
+    starchSpent: 0
+    hasPrestiged: 0
+  potatoGods: []
+  starchPerPrestige: 1
+  prestigeRequirement: 1000000
 --- !u!114 &1234567896
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,9 +253,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1234567890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01d2a04a973d494c80df00410123, type: 3}
+  m_Script: {fileID: 11500000, guid: 7e79d4a9666a2904ab02bbc87c6095f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  farms: []
+  tapPower: 1
+  clickMultiplier: 1
 --- !u!114 &1234567897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,9 +268,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1234567890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23663c08158149188f1ed3a30123, type: 3}
+  m_Script: {fileID: 11500000, guid: a2626397e64e6eb4bae89b64568e66e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buildings: []
+  processingEfficiency: 1
 --- !u!114 &1234567898
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,9 +282,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1234567890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5313d1cd6a74366b8f05cac0123, type: 3}
+  m_Script: {fileID: 11500000, guid: c97cff7803c01a34c88dc17ca0c314f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoSaveInterval: 30
+  saveFileName: potato_save.json
 --- !u!114 &1234567899
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,9 +296,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1234567890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ed4ff5956ad435fa4e086410123, type: 3}
+  m_Script: {fileID: 11500000, guid: 9202933c83bc4b7458e6f6bfbe26af90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  availableEvents: []
+  activeEvents: []
+  eventCheckInterval: 300
+  eventChance: 0.1
 --- !u!114 &1234567900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,9 +312,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1234567890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebe220be65a24448a0e741220123, type: 3}
+  m_Script: {fileID: 11500000, guid: a4fce22cbfea69c4f9162bda0447b5fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weeklyLeaderboard: []
+  allTimeLeaderboard: []
+  activeCommunityGoals: []
+  completedCommunityGoals: []
+  playerName: Player
+  leaderboardUpdateInterval: 300
 --- !u!114 &1234567901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,9 +330,51 @@ MonoBehaviour:
   m_GameObject: {fileID: 1234567890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 266932f9074e4dc79ea891f20123, type: 3}
+  m_Script: {fileID: 11500000, guid: 7660ffcd42578754899fa479605a5cb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  musicSource: {fileID: 0}
+  sfxSource: {fileID: 0}
+  backgroundMusic: {fileID: 0}
+  musicVolume: 0.7
+  tapSound: {fileID: 0}
+  upgradeSound: {fileID: 0}
+  prestigeSound: {fileID: 0}
+  processSound: {fileID: 0}
+  cashSound: {fileID: 0}
+  eventSound: {fileID: 0}
+  sfxVolume: 0.8
+--- !u!1 &1767894142
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1767894145}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1767894145
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1767894142}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2097312345
 GameObject:
   m_ObjectHideFlags: 0
@@ -310,13 +400,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2097312345}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &2097312347
 Camera:
@@ -332,19 +422,28 @@ Camera:
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
+  m_Iso: 200
+  m_ShutterSpeed: 0.005
+  m_Aperture: 16
+  m_FocusDistance: 10
+  m_FocalLength: 50
+  m_BladeCount: 5
+  m_Curvature: {x: 2, y: 11}
+  m_BarrelClipping: 0.25
+  m_Anamorphism: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
     y: 0
     width: 1
     height: 1
-  m_near: 0.3
-  m_far: 1000
-  m_orthographic: 1
-  m_orthographicSize: 5
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -368,3 +467,10 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2097312345}
   m_Enabled: 1
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 2097312346}
+  - {fileID: 1234567891}
+  - {fileID: 1767894145}
