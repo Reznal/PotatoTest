@@ -57,9 +57,11 @@ namespace PotatoFarm.UI
         
         private void Start()
         {
+            Debug.Log("MainGameUI Start() called");
             SetupMainUI();
             SubscribeToEvents();
             ShowPanel(farmsPanel);
+            Debug.Log($"MainGameUI setup complete. Canvas: {mainCanvas?.name}, TapButton: {tapButton != null}");
         }
         
         private void OnDestroy()
@@ -78,6 +80,16 @@ namespace PotatoFarm.UI
                 canvasObj.AddComponent<CanvasScaler>();
                 canvasObj.AddComponent<GraphicRaycaster>();
             }
+            
+            // Ensure canvas is configured for interactions
+            mainCanvas.overrideSorting = false;
+            var canvasGroup = mainCanvas.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+            {
+                canvasGroup = mainCanvas.gameObject.AddComponent<CanvasGroup>();
+            }
+            canvasGroup.blocksRaycasts = true;
+            canvasGroup.interactable = true;
             
             CreateUIElements();
             SetupButtonListeners();
@@ -175,6 +187,14 @@ namespace PotatoFarm.UI
             textComponent.color = Color.white;
             textComponent.alignment = TextAlignmentOptions.Center;
             
+            // Properly configure RectTransform for text
+            var rectTransform = textObj.GetComponent<RectTransform>();
+            rectTransform.localScale = Vector3.one;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+            
             return textComponent;
         }
         
@@ -188,8 +208,11 @@ namespace PotatoFarm.UI
             buttonImage.color = new Color(0.8f, 0.6f, 0.2f, 1f); // Potato-like color
             
             tapButton = buttonObj.AddComponent<Button>();
+            tapButton.targetGraphic = buttonImage;
+            tapButton.interactable = true;  // Explicitly enable interaction
             
             var buttonRect = buttonObj.GetComponent<RectTransform>();
+            buttonRect.localScale = Vector3.one;
             buttonRect.anchorMin = new Vector2(0.3f, 0.3f);
             buttonRect.anchorMax = new Vector2(0.7f, 0.7f);
             buttonRect.offsetMin = Vector2.zero;
@@ -235,6 +258,11 @@ namespace PotatoFarm.UI
             
             var button = buttonObj.AddComponent<Button>();
             button.targetGraphic = image;
+            button.interactable = true;  // Explicitly enable interaction
+            
+            // Properly configure RectTransform for button
+            var rectTransform = buttonObj.GetComponent<RectTransform>();
+            rectTransform.localScale = Vector3.one;
             
             var buttonText = CreateResourceText(buttonObj, text);
             buttonText.fontSize = 14;
@@ -335,23 +363,48 @@ namespace PotatoFarm.UI
         
         private void SetupButtonListeners()
         {
+            Debug.Log("Setting up button listeners...");
             if (tapButton != null)
+            {
                 tapButton.onClick.AddListener(OnTapButtonClicked);
+                Debug.Log("Tap button listener added");
+            }
+            else
+            {
+                Debug.LogWarning("Tap button is null!");
+            }
             
             if (farmsButton != null)
+            {
                 farmsButton.onClick.AddListener(() => ShowPanel(farmsPanel));
+                Debug.Log("Farms button listener added");
+            }
             
             if (upgradesButton != null)
+            {
                 upgradesButton.onClick.AddListener(() => ShowPanel(upgradesPanel));
+                Debug.Log("Upgrades button listener added");
+            }
             
             if (processingButton != null)
+            {
                 processingButton.onClick.AddListener(() => ShowPanel(processingPanel));
+                Debug.Log("Processing button listener added");
+            }
             
             if (prestigeButton != null)
+            {
                 prestigeButton.onClick.AddListener(() => ShowPanel(prestigePanel));
+                Debug.Log("Prestige button listener added");
+            }
             
             if (communityButton != null)
+            {
                 communityButton.onClick.AddListener(() => ShowPanel(communityPanel));
+                Debug.Log("Community button listener added");
+            }
+            
+            Debug.Log("Button listeners setup complete");
         }
         
         private void SubscribeToEvents()
@@ -423,14 +476,22 @@ namespace PotatoFarm.UI
         
         private void OnTapButtonClicked()
         {
+            Debug.Log("Tap button clicked!");
             if (GameManager.Instance?.farmManager != null)
             {
                 GameManager.Instance.farmManager.TapFarm();
+                Debug.Log("TapFarm called successfully");
+            }
+            else
+            {
+                Debug.LogWarning("GameManager.Instance or farmManager is null");
             }
         }
         
         private void ShowPanel(GameObject panel)
         {
+            Debug.Log($"ShowPanel called for: {panel?.name}");
+            
             // Hide current panel
             if (currentActivePanel != null)
             {
