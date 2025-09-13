@@ -27,9 +27,7 @@ namespace PotatoFarm.Systems
         
         public double GetUpgradeCost()
         {
-            double upgradeCost = cost * Math.Pow(costMultiplier, level);
-            Debug.Log($"GetUpgradeCost for {name}: base cost={cost}, level={level}, multiplier={costMultiplier}, result=${upgradeCost:F0}");
-            return upgradeCost;
+            return cost * Math.Pow(costMultiplier, level);
         }
         
         public double GetEfficiency()
@@ -103,7 +101,7 @@ namespace PotatoFarm.Systems
                     isUnlocked = true,
                     level = 1,
                     baseSpeed = 1.0,
-                    cost = 100,
+                    cost = 50, // Reduced from 100 to 50 so first upgrade costs 60 instead of 120
                     inputRequired = 10,
                     outputValue = 15
                 });

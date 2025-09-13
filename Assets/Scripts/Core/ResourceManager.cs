@@ -8,7 +8,7 @@ namespace PotatoFarm.Core
     public class ResourceData
     {
         public double potatoes = 0;
-        public double cash = 100; // Starting cash
+        public double cash = 200; // Starting cash - increased for easier testing
         public double starch = 0;
         public double goldenPotatoes = 0;
         

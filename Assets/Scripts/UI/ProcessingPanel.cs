@@ -136,6 +136,8 @@ namespace PotatoFarm.UI
                 bool canAffordUpgrade = GameManager.Instance.resourceManager.CanAfford(ResourceType.Cash, building.GetUpgradeCost());
                 var upgradeButton = CreateButton(buttonArea, $"Upgrade\n${building.GetUpgradeCost():F0}");
                 
+                Debug.Log($"Creating upgrade button for {building.name} - Can afford: {canAffordUpgrade}, Cost: ${building.GetUpgradeCost():F0}, Current cash: ${GameManager.Instance.resourceManager.GetResource(ResourceType.Cash):F0}");
+                
                 if (!canAffordUpgrade)
                 {
                     upgradeButton.interactable = false;
@@ -162,6 +164,8 @@ namespace PotatoFarm.UI
                         }
                     });
                 }
+                
+                Debug.Log($"Upgrade button for {building.name}: interactable={upgradeButton.interactable}, color={upgradeButton.GetComponent<Image>().color}");
 
                 // Start/Stop processing button
                 var processButton = CreateButton(buttonArea, building.isProcessing ? "STOP" : "START");
