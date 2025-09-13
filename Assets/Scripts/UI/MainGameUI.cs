@@ -130,7 +130,7 @@ namespace PotatoFarm.UI
                 navigationPanel = CreatePanel("NavigationPanel", mainCanvas.transform);
                 var rect = navigationPanel.GetComponent<RectTransform>();
                 rect.anchorMin = new Vector2(0, 0);
-                rect.anchorMax = new Vector2(1, 0.15f);
+                rect.anchorMax = new Vector2(1, 0.08f);
                 rect.offsetMin = Vector2.zero;
                 rect.offsetMax = Vector2.zero;
                 
@@ -268,7 +268,7 @@ namespace PotatoFarm.UI
             rectTransform.localScale = Vector3.one;
             
             var buttonText = CreateResourceText(buttonObj, text);
-            buttonText.fontSize = 14;
+            buttonText.fontSize = 12;  // Reduced font size for better fit
             
             return button;
         }
@@ -296,7 +296,8 @@ namespace PotatoFarm.UI
             var rect = panel.GetComponent<RectTransform>();
             
             // Set the panel to fill the center area between navigation and resource panels
-            rect.anchorMin = new Vector2(0, 0.15f);
+            // Navigation is now 8% and resource is 15%, so content gets more space
+            rect.anchorMin = new Vector2(0, 0.08f);
             rect.anchorMax = new Vector2(1, 0.85f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
@@ -340,11 +341,11 @@ namespace PotatoFarm.UI
             contentRect.localPosition = Vector3.zero;
             
             var verticalLayout = content.AddComponent<VerticalLayoutGroup>();
-            verticalLayout.childControlWidth = true;
+            verticalLayout.childControlWidth = false;  // Don't force control width
             verticalLayout.childControlHeight = false;
-            verticalLayout.childForceExpandWidth = true;
-            verticalLayout.spacing = 5;
-            verticalLayout.padding = new RectOffset(10, 10, 10, 10);
+            verticalLayout.childForceExpandWidth = false;  // Don't force expand width
+            verticalLayout.spacing = 8;  // Increased spacing
+            verticalLayout.padding = new RectOffset(15, 15, 15, 15);  // Increased padding
             
             var contentSizeFitter = content.AddComponent<ContentSizeFitter>();
             contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -537,7 +538,7 @@ namespace PotatoFarm.UI
                 
                 // Ensure panel is properly positioned and visible
                 var rect = panel.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0, 0.15f);
+                rect.anchorMin = new Vector2(0, 0.08f);
                 rect.anchorMax = new Vector2(1, 0.85f);
                 rect.offsetMin = Vector2.zero;
                 rect.offsetMax = Vector2.zero;
