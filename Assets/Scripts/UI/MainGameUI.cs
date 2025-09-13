@@ -304,6 +304,33 @@ namespace PotatoFarm.UI
             scrollRect.content = contentRect;
             scrollRect.vertical = true;
             scrollRect.horizontal = false;
+            
+            // Add specific panel components
+            if (panel == farmsPanel)
+            {
+                var farmPanel = content.AddComponent<FarmPanel>();
+                farmPanel.farmListParent = content.transform;
+            }
+            else if (panel == upgradesPanel)
+            {
+                var upgradePanel = content.AddComponent<UpgradePanel>();
+                upgradePanel.upgradeListParent = content.transform;
+            }
+            else if (panel == processingPanel)
+            {
+                var processingPanelComp = content.AddComponent<ProcessingPanel>();
+                processingPanelComp.processingListParent = content.transform;
+            }
+            else if (panel == prestigePanel)
+            {
+                var prestigePanelComp = content.AddComponent<PrestigePanel>();
+                prestigePanelComp.prestigeContentParent = content.transform;
+            }
+            else if (panel == communityPanel)
+            {
+                var communityPanelComp = content.AddComponent<CommunityPanel>();
+                communityPanelComp.communityContentParent = content.transform;
+            }
         }
         
         private void SetupButtonListeners()
