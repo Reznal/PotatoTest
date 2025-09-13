@@ -61,65 +61,55 @@ namespace PotatoFarm.UI
             GameObject item = new GameObject($"Farm_{index}");
             item.transform.SetParent(farmListParent, false);
             
-            // Add layout components
-            var layoutElement = item.AddComponent<LayoutElement>();
-            layoutElement.preferredHeight = 100;
+            // Add background to show it's a separate item
+            var backgroundImage = item.AddComponent<Image>();
+            backgroundImage.color = new Color(0.2f, 0.2f, 0.3f, 0.8f); // Dark blue-gray background
             
-            var horizontalLayout = item.AddComponent<HorizontalLayoutGroup>();
-            horizontalLayout.childControlWidth = false;
-            horizontalLayout.childControlHeight = true;
-            horizontalLayout.childForceExpandWidth = false;
-            horizontalLayout.childForceExpandHeight = false;
-            horizontalLayout.spacing = 10;
-            horizontalLayout.padding = new RectOffset(10, 10, 10, 10);
+            // The GridLayoutGroup on the parent will handle sizing (500x250)
+            // No need for LayoutElement since grid controls size
             
-            // Farm info
-            var infoPanel = new GameObject("Info");
-            infoPanel.transform.SetParent(item.transform, false);
-            var infoLayout = infoPanel.AddComponent<LayoutElement>();
-            infoLayout.preferredWidth = 200;
-            
-            var infoVertical = infoPanel.AddComponent<VerticalLayoutGroup>();
-            infoVertical.childControlWidth = true;
-            infoVertical.childControlHeight = false;
-            infoVertical.childForceExpandWidth = true;
+            // Use vertical layout for internal organization
+            var verticalLayout = item.AddComponent<VerticalLayoutGroup>();
+            verticalLayout.childControlWidth = true;
+            verticalLayout.childControlHeight = false;
+            verticalLayout.childForceExpandWidth = true;
+            verticalLayout.spacing = 5;
+            verticalLayout.padding = new RectOffset(15, 15, 15, 15);
             
             // Farm name
-            var nameText = CreateText(infoPanel, $"{farm.name}");
-            nameText.fontSize = 16;
+            var nameText = CreateText(item, $"{farm.name}");
+            nameText.fontSize = 18;
             nameText.fontStyle = FontStyles.Bold;
             
-            // Farm level and production
-            var levelText = CreateText(infoPanel, $"Level: {farm.level}");
-            var productionText = CreateText(infoPanel, $"Production: {farm.GetCurrentProduction():F1}/sec");
-            var soilText = CreateText(infoPanel, $"Soil: {farm.soilType}");
+            // Farm level and production info
+            var levelText = CreateText(item, $"Level: {farm.level}");
+            var productionText = CreateText(item, $"Production: {farm.GetCurrentProduction():F1}/sec");
+            var soilText = CreateText(item, $"Soil: {farm.soilType}");
             
-            // Buttons panel
-            var buttonPanel = new GameObject("Buttons");
-            buttonPanel.transform.SetParent(item.transform, false);
-            var buttonLayout = buttonPanel.AddComponent<LayoutElement>();
-            buttonLayout.preferredWidth = 150;
+            // Button area
+            var buttonArea = new GameObject("ButtonArea");
+            buttonArea.transform.SetParent(item.transform, false);
             
-            var buttonVertical = buttonPanel.AddComponent<VerticalLayoutGroup>();
-            buttonVertical.childControlWidth = true;
-            buttonVertical.childControlHeight = false;
-            buttonVertical.childForceExpandWidth = true;
-            buttonVertical.spacing = 5;
+            var buttonLayout = buttonArea.AddComponent<HorizontalLayoutGroup>();
+            buttonLayout.childControlWidth = true;
+            buttonLayout.childControlHeight = false;
+            buttonLayout.childForceExpandWidth = true;
+            buttonLayout.spacing = 10;
             
             if (farm.isUnlocked)
             {
                 // Upgrade button
-                var upgradeButton = CreateButton(buttonPanel, $"Upgrade (${farm.GetUpgradeCost():F0})");
+                var upgradeButton = CreateButton(buttonArea, $"Upgrade\n${farm.GetUpgradeCost():F0}");
                 upgradeButton.onClick.AddListener(() => GameManager.Instance.farmManager.UpgradeFarm(index));
                 
                 // Automation status
-                var autoText = CreateText(buttonPanel, farm.hasAutomation ? "Auto: ON" : "Auto: OFF");
+                var autoText = CreateText(buttonArea, farm.hasAutomation ? "Auto: ON" : "Auto: OFF");
                 autoText.color = farm.hasAutomation ? Color.green : Color.red;
             }
             else
             {
                 // Unlock button
-                var unlockButton = CreateButton(buttonPanel, $"Unlock (${farm.cost:F0})");
+                var unlockButton = CreateButton(buttonArea, $"Unlock\n${farm.cost:F0}");
                 unlockButton.onClick.AddListener(() => GameManager.Instance.farmManager.UnlockFarm(index));
             }
         }

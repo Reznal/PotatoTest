@@ -340,8 +340,10 @@ namespace PotatoFarm.UI
             viewportRect.localPosition = Vector3.zero;
             
             // Add Mask component to viewport for proper clipping
-            viewport.AddComponent<Mask>().showMaskGraphic = false;
-            viewport.AddComponent<Image>().color = Color.clear;
+            var mask = viewport.AddComponent<Mask>();
+            mask.showMaskGraphic = false;
+            var viewportImage = viewport.AddComponent<Image>();
+            viewportImage.color = Color.white; // White with full alpha for proper mask functionality
             
             // Create content as child of viewport
             GameObject content = new GameObject("Content");
@@ -359,12 +361,15 @@ namespace PotatoFarm.UI
             contentRect.localScale = Vector3.one;
             contentRect.localPosition = Vector3.zero;
             
-            var verticalLayout = content.AddComponent<VerticalLayoutGroup>();
-            verticalLayout.childControlWidth = false;  // Don't force control width
-            verticalLayout.childControlHeight = false;
-            verticalLayout.childForceExpandWidth = false;  // Don't force expand width
-            verticalLayout.spacing = 8;  // Increased spacing
-            verticalLayout.padding = new RectOffset(15, 15, 15, 15);  // Increased padding
+            var gridLayout = content.AddComponent<GridLayoutGroup>();
+            gridLayout.childAlignment = TextAnchor.UpperCenter;
+            gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            gridLayout.constraintCount = 2; // 2 columns for better layout
+            gridLayout.spacing = new Vector2(10, 10);
+            gridLayout.padding = new RectOffset(50, 50, 15, 15);  // Fixed padding: 50 left/right instead of -50
+            
+            // Set different cell sizes based on panel type - will be overridden per panel
+            gridLayout.cellSize = new Vector2(350, 250);
             
             var contentSizeFitter = content.AddComponent<ContentSizeFitter>();
             contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -380,26 +385,46 @@ namespace PotatoFarm.UI
             {
                 var farmPanel = content.AddComponent<FarmPanel>();
                 farmPanel.farmListParent = content.transform;
+                
+                // Configure grid for farms: 500x250
+                gridLayout.cellSize = new Vector2(500, 250);
+                gridLayout.constraintCount = 1; // Single column for larger farm items
             }
             else if (panel == upgradesPanel)
             {
                 var upgradePanel = content.AddComponent<UpgradePanel>();
                 upgradePanel.upgradeListParent = content.transform;
+                
+                // Configure grid for upgrades: 350x250
+                gridLayout.cellSize = new Vector2(350, 250);
+                gridLayout.constraintCount = 2; // Two columns for upgrades
             }
             else if (panel == processingPanel)
             {
                 var processingPanelComp = content.AddComponent<ProcessingPanel>();
                 processingPanelComp.processingListParent = content.transform;
+                
+                // Configure grid for processing: 350x250
+                gridLayout.cellSize = new Vector2(350, 250);
+                gridLayout.constraintCount = 2; // Two columns for processing buildings
             }
             else if (panel == prestigePanel)
             {
                 var prestigePanelComp = content.AddComponent<PrestigePanel>();
                 prestigePanelComp.prestigeContentParent = content.transform;
+                
+                // Configure grid for prestige: larger single items
+                gridLayout.cellSize = new Vector2(500, 300);
+                gridLayout.constraintCount = 1; // Single column for prestige content
             }
             else if (panel == communityPanel)
             {
                 var communityPanelComp = content.AddComponent<CommunityPanel>();
                 communityPanelComp.communityContentParent = content.transform;
+                
+                // Configure grid for community: 350x250
+                gridLayout.cellSize = new Vector2(350, 250);
+                gridLayout.constraintCount = 2; // Two columns for community features
             }
         }
         

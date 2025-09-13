@@ -67,55 +67,45 @@ namespace PotatoFarm.UI
             item.transform.SetParent(processingListParent, false);
             processingItems.Add(item);
 
-            // Add layout components
-            var layoutElement = item.AddComponent<LayoutElement>();
-            layoutElement.preferredHeight = 140;
+            // Add background to show it's a separate item
+            var backgroundImage = item.AddComponent<Image>();
+            backgroundImage.color = new Color(0.25f, 0.15f, 0.25f, 0.8f); // Dark purple background for processing
 
-            var horizontalLayout = item.AddComponent<HorizontalLayoutGroup>();
-            horizontalLayout.childControlWidth = false;
-            horizontalLayout.childControlHeight = true;
-            horizontalLayout.childForceExpandWidth = false;
-            horizontalLayout.childForceExpandHeight = false;
-            horizontalLayout.spacing = 10;
-            horizontalLayout.padding = new RectOffset(10, 10, 10, 10);
-
-            // Building info
-            var infoPanel = new GameObject("Info");
-            infoPanel.transform.SetParent(item.transform, false);
-            var infoLayout = infoPanel.AddComponent<LayoutElement>();
-            infoLayout.preferredWidth = 280;
-
-            var infoVertical = infoPanel.AddComponent<VerticalLayoutGroup>();
-            infoVertical.childControlWidth = true;
-            infoVertical.childControlHeight = false;
-            infoVertical.childForceExpandWidth = true;
-            infoVertical.spacing = 2;
+            // The GridLayoutGroup on the parent will handle sizing (350x250)
+            // Use vertical layout for internal organization
+            var verticalLayout = item.AddComponent<VerticalLayoutGroup>();
+            verticalLayout.childControlWidth = true;
+            verticalLayout.childControlHeight = false;
+            verticalLayout.childForceExpandWidth = true;
+            verticalLayout.spacing = 4;
+            verticalLayout.padding = new RectOffset(12, 12, 12, 12);
 
             // Building name
-            var nameText = CreateText(infoPanel, building.name);
-            nameText.fontSize = 16;
+            var nameText = CreateText(item, building.name);
+            nameText.fontSize = 15;
             nameText.fontStyle = FontStyles.Bold;
 
             // Building level and speed
-            var levelText = CreateText(infoPanel, $"Level: {building.level}");
-            var speedText = CreateText(infoPanel, $"Speed: {building.GetProcessingSpeed():F1}/sec");
-            var efficiencyText = CreateText(infoPanel, $"Efficiency: {building.GetEfficiency():F1}%");
+            var levelText = CreateText(item, $"Level: {building.level}");
+            var speedText = CreateText(item, $"Speed: {building.GetProcessingSpeed():F1}/sec");
+            var efficiencyText = CreateText(item, $"Efficiency: {building.GetEfficiency():F1}%");
 
             // Input/Output info
-            var inputText = CreateText(infoPanel, $"Input: {building.inputType}");
-            var outputText = CreateText(infoPanel, $"Output: {building.outputType}");
+            var ioText = CreateText(item, $"{building.inputType} → {building.outputType}");
+            ioText.fontSize = 12;
+            ioText.color = Color.cyan;
 
             // Progress bar if processing
             if (building.isProcessing)
             {
                 var progressObj = new GameObject("Progress");
-                progressObj.transform.SetParent(infoPanel.transform, false);
+                progressObj.transform.SetParent(item.transform, false);
                 
                 var progressBg = progressObj.AddComponent<Image>();
                 progressBg.color = new Color(0.2f, 0.2f, 0.2f, 1f);
                 
                 var progressLayout = progressObj.AddComponent<LayoutElement>();
-                progressLayout.preferredHeight = 20;
+                progressLayout.preferredHeight = 15;
                 
                 var progressBarObj = new GameObject("ProgressBar");
                 progressBarObj.transform.SetParent(progressObj.transform, false);
@@ -130,30 +120,23 @@ namespace PotatoFarm.UI
                 progressRect.offsetMax = Vector2.zero;
             }
 
-            // Actions panel
-            var actionPanel = new GameObject("Actions");
-            actionPanel.transform.SetParent(item.transform, false);
-            var actionLayout = actionPanel.AddComponent<LayoutElement>();
-            actionLayout.preferredWidth = 150;
-
-            var actionVertical = actionPanel.AddComponent<VerticalLayoutGroup>();
-            actionVertical.childControlWidth = true;
-            actionVertical.childControlHeight = false;
-            actionVertical.childForceExpandWidth = true;
-            actionVertical.spacing = 5;
+            // Button area
+            var buttonArea = new GameObject("ButtonArea");
+            buttonArea.transform.SetParent(item.transform, false);
+            
+            var buttonLayout = buttonArea.AddComponent<HorizontalLayoutGroup>();
+            buttonLayout.childControlWidth = true;
+            buttonLayout.childControlHeight = false;
+            buttonLayout.childForceExpandWidth = true;
+            buttonLayout.spacing = 5;
 
             if (building.isUnlocked)
             {
-                // Upgrade cost
-                var costText = CreateText(actionPanel, $"Upgrade: ${building.GetUpgradeCost():F0}");
-                costText.fontSize = 12;
-                costText.fontStyle = FontStyles.Bold;
-
                 // Upgrade button
-                bool canAfford = GameManager.Instance.resourceManager.CanAfford(ResourceType.Cash, building.GetUpgradeCost());
-                var upgradeButton = CreateButton(actionPanel, "UPGRADE");
+                bool canAffordUpgrade = GameManager.Instance.resourceManager.CanAfford(ResourceType.Cash, building.GetUpgradeCost());
+                var upgradeButton = CreateButton(buttonArea, $"Upgrade\n${building.GetUpgradeCost():F0}");
                 
-                if (!canAfford)
+                if (!canAffordUpgrade)
                 {
                     upgradeButton.interactable = false;
                     upgradeButton.GetComponent<Image>().color = Color.red;
@@ -166,7 +149,7 @@ namespace PotatoFarm.UI
                 }
 
                 // Start/Stop processing button
-                var processButton = CreateButton(actionPanel, building.isProcessing ? "STOP" : "START");
+                var processButton = CreateButton(buttonArea, building.isProcessing ? "STOP" : "START");
                 processButton.GetComponent<Image>().color = building.isProcessing ? 
                     new Color(0.8f, 0.2f, 0.2f, 1f) : 
                     new Color(0.2f, 0.8f, 0.2f, 1f);
@@ -180,16 +163,11 @@ namespace PotatoFarm.UI
             }
             else
             {
-                // Unlock cost
-                var unlockCostText = CreateText(actionPanel, $"Unlock: ${building.cost:F0}");
-                unlockCostText.fontSize = 12;
-                unlockCostText.fontStyle = FontStyles.Bold;
-
                 // Unlock button
-                bool canAfford = GameManager.Instance.resourceManager.CanAfford(ResourceType.Cash, building.cost);
-                var unlockButton = CreateButton(actionPanel, "UNLOCK");
+                bool canAffordUnlock = GameManager.Instance.resourceManager.CanAfford(ResourceType.Cash, building.cost);
+                var unlockButton = CreateButton(buttonArea, $"Unlock\n${building.cost:F0}");
                 
-                if (!canAfford)
+                if (!canAffordUnlock)
                 {
                     unlockButton.interactable = false;
                     unlockButton.GetComponent<Image>().color = Color.red;
@@ -201,10 +179,6 @@ namespace PotatoFarm.UI
                     unlockButton.onClick.AddListener(() => GameManager.Instance.processingManager.UnlockBuilding(index));
                 }
             }
-
-            // Background
-            var background = item.AddComponent<Image>();
-            background.color = new Color(0.1f, 0.1f, 0.1f, 0.7f);
         }
 
         private TextMeshProUGUI CreateText(GameObject parent, string text)
