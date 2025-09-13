@@ -17,6 +17,13 @@ namespace PotatoFarm.Core
         public PrestigeManager prestigeManager;
         public FarmManager farmManager;
         
+        [Header("Systems")]
+        public PotatoFarm.Systems.ProcessingManager processingManager;
+        public PotatoFarm.Systems.SaveManager saveManager;
+        public PotatoFarm.Systems.EventManager eventManager;
+        public PotatoFarm.Systems.CommunityManager communityManager;
+        public PotatoFarm.Systems.AudioManager audioManager;
+        
         public event Action OnGameTick;
         
         private void Awake()
@@ -50,6 +57,18 @@ namespace PotatoFarm.Core
                 prestigeManager = gameObject.AddComponent<PrestigeManager>();
             if (farmManager == null)
                 farmManager = gameObject.AddComponent<FarmManager>();
+                
+            // Initialize all systems
+            if (processingManager == null)
+                processingManager = gameObject.AddComponent<PotatoFarm.Systems.ProcessingManager>();
+            if (saveManager == null)
+                saveManager = gameObject.AddComponent<PotatoFarm.Systems.SaveManager>();
+            if (eventManager == null)
+                eventManager = gameObject.AddComponent<PotatoFarm.Systems.EventManager>();
+            if (communityManager == null)
+                communityManager = gameObject.AddComponent<PotatoFarm.Systems.CommunityManager>();
+            if (audioManager == null)
+                audioManager = gameObject.AddComponent<PotatoFarm.Systems.AudioManager>();
         }
         
         private void GameTick()
