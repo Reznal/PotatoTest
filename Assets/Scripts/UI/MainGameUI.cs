@@ -340,8 +340,10 @@ namespace PotatoFarm.UI
             viewportRect.localPosition = Vector3.zero;
             
             // Add Mask component to viewport for proper clipping
-            viewport.AddComponent<Mask>().showMaskGraphic = false;
-            viewport.AddComponent<Image>().color = Color.clear;
+            var mask = viewport.AddComponent<Mask>();
+            mask.showMaskGraphic = false;
+            var viewportImage = viewport.AddComponent<Image>();
+            viewportImage.color = Color.white; // White with full alpha for proper mask functionality
             
             // Create content as child of viewport
             GameObject content = new GameObject("Content");
