@@ -248,5 +248,10 @@ namespace PotatoFarm.Core
         {
             return potatoGods.Count;
         }
+        
+        public int GetPrestigeLevel()
+        {
+            return prestigeData.totalPrestiges;
+        }
     }
 }

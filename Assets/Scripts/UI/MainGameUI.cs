@@ -365,11 +365,11 @@ namespace PotatoFarm.UI
             var gridLayout = content.AddComponent<GridLayoutGroup>();
             gridLayout.childAlignment = TextAnchor.UpperCenter;
             gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            gridLayout.constraintCount = 2; // 2 columns for better layout
+            gridLayout.constraintCount = 3; // 3 columns for better layout
             gridLayout.spacing = new Vector2(10, 10);
             gridLayout.padding = new RectOffset(50, 50, 15, 15);  // Fixed padding: 50 left/right instead of -50
             
-            // Set different cell sizes based on panel type - will be overridden per panel
+            // Set default cell sizes - will be overridden per panel type
             gridLayout.cellSize = new Vector2(350, 250);
             
             var contentSizeFitter = content.AddComponent<ContentSizeFitter>();
@@ -387,45 +387,50 @@ namespace PotatoFarm.UI
                 var farmPanel = content.AddComponent<FarmPanel>();
                 farmPanel.farmListParent = content.transform;
                 
-                // Configure grid for farms: 500x250
-                gridLayout.cellSize = new Vector2(500, 250);
-                gridLayout.constraintCount = 1; // Single column for larger farm items
+                // Configure grid for farms: 350x250 with 3 columns
+                gridLayout.cellSize = new Vector2(350, 250);
+                gridLayout.constraintCount = 3; // Three columns
             }
             else if (panel == upgradesPanel)
             {
                 var upgradePanel = content.AddComponent<UpgradePanel>();
                 upgradePanel.upgradeListParent = content.transform;
                 
-                // Configure grid for upgrades: 350x250
+                // Configure grid for upgrades: 350x250 with 3 columns
                 gridLayout.cellSize = new Vector2(350, 250);
-                gridLayout.constraintCount = 2; // Two columns for upgrades
+                gridLayout.constraintCount = 3; // Three columns
             }
             else if (panel == processingPanel)
             {
                 var processingPanelComp = content.AddComponent<ProcessingPanel>();
                 processingPanelComp.processingListParent = content.transform;
                 
-                // Configure grid for processing: 350x250
+                // Configure grid for processing: 350x250 with 3 columns
                 gridLayout.cellSize = new Vector2(350, 250);
-                gridLayout.constraintCount = 2; // Two columns for processing buildings
+                gridLayout.constraintCount = 3; // Three columns
             }
             else if (panel == prestigePanel)
             {
                 var prestigePanelComp = content.AddComponent<PrestigePanel>();
                 prestigePanelComp.prestigeContentParent = content.transform;
                 
-                // Configure grid for prestige: larger single items
-                gridLayout.cellSize = new Vector2(500, 300);
-                gridLayout.constraintCount = 1; // Single column for prestige content
+                // Prestige panel should NOT use grid - remove GridLayoutGroup and add VerticalLayoutGroup
+                Object.DestroyImmediate(gridLayout);
+                var verticalLayout = content.AddComponent<VerticalLayoutGroup>();
+                verticalLayout.childControlWidth = true;
+                verticalLayout.childControlHeight = false;
+                verticalLayout.childForceExpandWidth = true;
+                verticalLayout.spacing = 15;
+                verticalLayout.padding = new RectOffset(50, 50, 15, 15);
             }
             else if (panel == communityPanel)
             {
                 var communityPanelComp = content.AddComponent<CommunityPanel>();
                 communityPanelComp.communityContentParent = content.transform;
                 
-                // Configure grid for community: 350x250
+                // Configure grid for community: 350x250 with 3 columns
                 gridLayout.cellSize = new Vector2(350, 250);
-                gridLayout.constraintCount = 2; // Two columns for community features
+                gridLayout.constraintCount = 3; // Three columns
             }
         }
         

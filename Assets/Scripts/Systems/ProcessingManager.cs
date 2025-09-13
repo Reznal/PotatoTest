@@ -142,7 +142,7 @@ namespace PotatoFarm.Systems
                 {
                     // Update processing progress
                     double speed = building.GetProcessingSpeed() * processingEfficiency;
-                    double progressIncrease = speed * 0.1 / 10.0; // 10 seconds to complete one cycle
+                    double progressIncrease = speed * 0.1 / 5.0; // 5 seconds to complete one cycle (faster for better gameplay)
                     building.processingProgress += progressIncrease;
                     
                     if (building.processingProgress >= 1.0)
@@ -159,6 +159,7 @@ namespace PotatoFarm.Systems
                             double cashGained = building.outputValue;
                             resourceManager.AddResource(PotatoFarm.Core.ResourceType.Cash, cashGained);
                             
+                            Debug.Log($"{building.name} processed {potatoesNeeded} potatoes into ${cashGained} cash!");
                             OnItemProcessed?.Invoke(building.type, 1);
                         }
                         else
@@ -230,6 +231,7 @@ namespace PotatoFarm.Systems
             
             building.isProcessing = true;
             building.processingProgress = 0.0;
+            Debug.Log($"Started processing at {building.name}");
             return true;
         }
         
@@ -240,6 +242,7 @@ namespace PotatoFarm.Systems
             var building = buildings[buildingIndex];
             building.isProcessing = false;
             building.processingProgress = 0.0;
+            Debug.Log($"Stopped processing at {building.name}");
             return true;
         }
         

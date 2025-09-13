@@ -19,105 +19,127 @@ namespace PotatoFarm.UI
         {
             if (communityContentParent == null) return;
 
-            // Title
-            var titleText = CreateText(communityContentParent.gameObject, "COMMUNITY FEATURES");
-            titleText.fontSize = 24;
-            titleText.fontStyle = FontStyles.Bold;
-            titleText.color = new Color(0.2f, 0.8f, 1f, 1f);
-            
-            var titleLayout = titleText.gameObject.AddComponent<LayoutElement>();
-            titleLayout.preferredHeight = 50;
+            // Player Statistics Card
+            var statsCard = CreateEnhancedPanel("Player Stats", communityContentParent);
+            var statsVertical = statsCard.AddComponent<VerticalLayoutGroup>();
+            statsVertical.childControlWidth = true;
+            statsVertical.childControlHeight = false;
+            statsVertical.childForceExpandWidth = true;
+            statsVertical.spacing = 8;
+            statsVertical.padding = new RectOffset(20, 20, 20, 20);
 
-            // Leaderboard section
-            var leaderboardPanel = CreatePanel("Leaderboard", communityContentParent);
-            var leaderboardLayout = leaderboardPanel.AddComponent<LayoutElement>();
-            leaderboardLayout.preferredHeight = 200;
+            var statsTitle = CreateText(statsCard, "🏆 YOUR ACHIEVEMENTS");
+            statsTitle.fontSize = 16;
+            statsTitle.fontStyle = FontStyles.Bold;
+            statsTitle.color = new Color(1f, 0.8f, 0.2f, 1f);
+
+            CreateText(statsCard, "Total Potatoes Harvested: " + GetFormattedNumber(GetTotalPotatoesHarvested()));
+            CreateText(statsCard, "Total Cash Earned: $" + GetFormattedNumber(GetTotalCashEarned()));
+            CreateText(statsCard, "Play Time: " + GetPlayTimeFormatted());
+            CreateText(statsCard, "Prestige Level: " + GetPrestigeLevel().ToString());
+
+            // Daily Rewards Card
+            var rewardsCard = CreateEnhancedPanel("Daily Rewards", communityContentParent);
+            var rewardsVertical = rewardsCard.AddComponent<VerticalLayoutGroup>();
+            rewardsVertical.childControlWidth = true;
+            rewardsVertical.childControlHeight = false;
+            rewardsVertical.childForceExpandWidth = true;
+            rewardsVertical.spacing = 8;
+            rewardsVertical.padding = new RectOffset(20, 20, 20, 20);
+
+            var rewardsTitle = CreateText(rewardsCard, "🎁 DAILY REWARDS");
+            rewardsTitle.fontSize = 16;
+            rewardsTitle.fontStyle = FontStyles.Bold;
+            rewardsTitle.color = new Color(0.2f, 1f, 0.2f, 1f);
+
+            CreateText(rewardsCard, "Streak: 3 days");
+            CreateText(rewardsCard, "Today's Reward: 500 Potatoes + $100");
             
-            var leaderboardVertical = leaderboardPanel.AddComponent<VerticalLayoutGroup>();
+            var claimButton = CreateButton(rewardsCard, "🎁 CLAIM REWARD");
+            claimButton.GetComponent<Image>().color = new Color(0.2f, 0.8f, 0.2f, 1f);
+            claimButton.onClick.AddListener(() => ClaimDailyReward());
+
+            // Leaderboard Card
+            var leaderboardCard = CreateEnhancedPanel("Global Leaderboard", communityContentParent);
+            var leaderboardVertical = leaderboardCard.AddComponent<VerticalLayoutGroup>();
             leaderboardVertical.childControlWidth = true;
             leaderboardVertical.childControlHeight = false;
             leaderboardVertical.childForceExpandWidth = true;
             leaderboardVertical.spacing = 5;
-            leaderboardVertical.padding = new RectOffset(15, 15, 15, 15);
+            leaderboardVertical.padding = new RectOffset(20, 20, 20, 20);
 
-            var leaderboardTitle = CreateText(leaderboardPanel, "Global Leaderboard");
-            leaderboardTitle.fontSize = 18;
+            var leaderboardTitle = CreateText(leaderboardCard, "🌟 TOP FARMERS");
+            leaderboardTitle.fontSize = 16;
             leaderboardTitle.fontStyle = FontStyles.Bold;
-            leaderboardTitle.color = new Color(1f, 0.8f, 0.2f, 1f);
+            leaderboardTitle.color = new Color(0.2f, 0.8f, 1f, 1f);
 
-            // Sample leaderboard entries
-            CreateText(leaderboardPanel, "1. PotatoMaster - 1.2T Potatoes");
-            CreateText(leaderboardPanel, "2. FarmKing - 987B Potatoes");
-            CreateText(leaderboardPanel, "3. TuberLord - 654B Potatoes");
-            CreateText(leaderboardPanel, "...");
-            CreateText(leaderboardPanel, "You: 0 Potatoes (Rank: Unranked)");
+            CreateText(leaderboardCard, "🥇 PotatoMaster - 1.2T Potatoes");
+            CreateText(leaderboardCard, "🥈 FarmKing - 987B Potatoes");
+            CreateText(leaderboardCard, "🥉 TuberLord - 654B Potatoes");
+            CreateText(leaderboardCard, "4. GoldenHarvester - 321B Potatoes");
+            CreateText(leaderboardCard, "5. PotatoProud - 156B Potatoes");
+            CreateText(leaderboardCard, "...");
+            CreateText(leaderboardCard, "🎯 You: Rank #999+ (Keep growing!)");
 
-            // Events section
-            var eventsPanel = CreatePanel("Events", communityContentParent);
-            var eventsLayout = eventsPanel.AddComponent<LayoutElement>();
-            eventsLayout.preferredHeight = 150;
-            
-            var eventsVertical = eventsPanel.AddComponent<VerticalLayoutGroup>();
+            // Events & Challenges Card
+            var eventsCard = CreateEnhancedPanel("Active Events", communityContentParent);
+            var eventsVertical = eventsCard.AddComponent<VerticalLayoutGroup>();
             eventsVertical.childControlWidth = true;
             eventsVertical.childControlHeight = false;
             eventsVertical.childForceExpandWidth = true;
-            eventsVertical.spacing = 5;
-            eventsVertical.padding = new RectOffset(15, 15, 15, 15);
+            eventsVertical.spacing = 8;
+            eventsVertical.padding = new RectOffset(20, 20, 20, 20);
 
-            var eventsTitle = CreateText(eventsPanel, "Special Events");
-            eventsTitle.fontSize = 18;
+            var eventsTitle = CreateText(eventsCard, "⚡ SPECIAL EVENTS");
+            eventsTitle.fontSize = 16;
             eventsTitle.fontStyle = FontStyles.Bold;
-            eventsTitle.color = new Color(1f, 0.8f, 0.2f, 1f);
+            eventsTitle.color = new Color(1f, 0.4f, 0.8f, 1f);
 
-            CreateText(eventsPanel, "• Double Tap Event (Active: 2h 15m)");
-            CreateText(eventsPanel, "• Golden Potato Weekend (Starts in: 3d)");
-            CreateText(eventsPanel, "• Harvest Festival (Coming Soon)");
+            CreateText(eventsCard, "🔥 Double Tap Bonus (2h 15m left)");
+            CreateText(eventsCard, "✨ Golden Potato Weekend (Starts: 3 days)");
+            CreateText(eventsCard, "🎪 Harvest Festival (Coming Soon!)");
+            CreateText(eventsCard, "🚀 Mega Multiplier Monday (6 days)");
 
-            // Challenges section
-            var challengesPanel = CreatePanel("Challenges", communityContentParent);
-            var challengesLayout = challengesPanel.AddComponent<LayoutElement>();
-            challengesLayout.preferredHeight = 180;
-            
-            var challengesVertical = challengesPanel.AddComponent<VerticalLayoutGroup>();
-            challengesVertical.childControlWidth = true;
-            challengesVertical.childControlHeight = false;
-            challengesVertical.childForceExpandWidth = true;
-            challengesVertical.spacing = 5;
-            challengesVertical.padding = new RectOffset(15, 15, 15, 15);
-
-            var challengesTitle = CreateText(challengesPanel, "Daily Challenges");
-            challengesTitle.fontSize = 18;
-            challengesTitle.fontStyle = FontStyles.Bold;
-            challengesTitle.color = new Color(1f, 0.8f, 0.2f, 1f);
-
-            CreateText(challengesPanel, "✓ Tap 100 times (100/100) - Completed!");
-            CreateText(challengesPanel, "○ Earn $10K (Progress: $0/10K)");
-            CreateText(challengesPanel, "○ Harvest 50K Potatoes (Progress: 0/50K)");
-            CreateText(challengesPanel, "○ Buy 5 Upgrades (Progress: 0/5)");
-
-            // Social section
-            var socialPanel = CreatePanel("Social", communityContentParent);
-            var socialLayout = socialPanel.AddComponent<LayoutElement>();
-            socialLayout.preferredHeight = 120;
-            
-            var socialVertical = socialPanel.AddComponent<VerticalLayoutGroup>();
+            // Social Sharing Card
+            var socialCard = CreateEnhancedPanel("Share Progress", communityContentParent);
+            var socialVertical = socialCard.AddComponent<VerticalLayoutGroup>();
             socialVertical.childControlWidth = true;
             socialVertical.childControlHeight = false;
             socialVertical.childForceExpandWidth = true;
-            socialVertical.spacing = 5;
-            socialVertical.padding = new RectOffset(15, 15, 15, 15);
+            socialVertical.spacing = 10;
+            socialVertical.padding = new RectOffset(20, 20, 20, 20);
 
-            var socialTitle = CreateText(socialPanel, "Share Your Progress");
-            socialTitle.fontSize = 18;
+            var socialTitle = CreateText(socialCard, "📱 SHARE & INVITE");
+            socialTitle.fontSize = 16;
             socialTitle.fontStyle = FontStyles.Bold;
-            socialTitle.color = new Color(1f, 0.8f, 0.2f, 1f);
+            socialTitle.color = new Color(0.8f, 0.4f, 1f, 1f);
 
-            // Share buttons
-            var shareButton = CreateButton(socialPanel, "Share on Social Media");
+            var shareButton = CreateButton(socialCard, "📸 Share Screenshot");
             shareButton.GetComponent<Image>().color = new Color(0.2f, 0.6f, 1f, 1f);
+            shareButton.onClick.AddListener(() => ShareProgress());
 
-            var inviteButton = CreateButton(socialPanel, "Invite Friends");
+            var inviteButton = CreateButton(socialCard, "👥 Invite Friends (+50% bonus!)");
             inviteButton.GetComponent<Image>().color = new Color(0.8f, 0.4f, 0.8f, 1f);
+            inviteButton.onClick.AddListener(() => InviteFriends());
+
+            // Tips & Tricks Card
+            var tipsCard = CreateEnhancedPanel("Pro Tips", communityContentParent);
+            var tipsVertical = tipsCard.AddComponent<VerticalLayoutGroup>();
+            tipsVertical.childControlWidth = true;
+            tipsVertical.childControlHeight = false;
+            tipsVertical.childForceExpandWidth = true;
+            tipsVertical.spacing = 5;
+            tipsVertical.padding = new RectOffset(20, 20, 20, 20);
+
+            var tipsTitle = CreateText(tipsCard, "💡 FARMING TIPS");
+            tipsTitle.fontSize = 16;
+            tipsTitle.fontStyle = FontStyles.Bold;
+            tipsTitle.color = new Color(1f, 1f, 0.2f, 1f);
+
+            CreateText(tipsCard, "• Use potato washers to convert potatoes to cash!");
+            CreateText(tipsCard, "• Buy farms early for passive income");
+            CreateText(tipsCard, "• Prestige when you have 1M+ potatoes");
+            CreateText(tipsCard, "• Check back often for better idle progress");
         }
 
         private GameObject CreatePanel(string name, Transform parent)
@@ -129,6 +151,87 @@ namespace PotatoFarm.UI
             image.color = new Color(0.1f, 0.1f, 0.2f, 0.8f);
             
             return panel;
+        }
+
+        private GameObject CreateEnhancedPanel(string name, Transform parent)
+        {
+            GameObject panel = new GameObject(name);
+            panel.transform.SetParent(parent, false);
+            
+            var image = panel.AddComponent<Image>();
+            image.color = new Color(0.05f, 0.05f, 0.15f, 0.9f);
+            
+            // Add subtle border effect
+            var outline = panel.AddComponent<Outline>();
+            outline.effectColor = new Color(0.3f, 0.6f, 1f, 0.5f);
+            outline.effectDistance = new Vector2(2, 2);
+            
+            return panel;
+        }
+
+        // Helper methods for community features
+        private double GetTotalPotatoesHarvested()
+        {
+            // This would normally come from save data/statistics
+            if (GameManager.Instance?.resourceManager != null)
+                return GameManager.Instance.resourceManager.GetResource(PotatoFarm.Core.ResourceType.Potatoes);
+            return 0;
+        }
+
+        private double GetTotalCashEarned()
+        {
+            // This would normally come from save data/statistics  
+            if (GameManager.Instance?.resourceManager != null)
+                return GameManager.Instance.resourceManager.GetResource(PotatoFarm.Core.ResourceType.Cash);
+            return 0;
+        }
+
+        private string GetPlayTimeFormatted()
+        {
+            // Simple approximation based on Time.realtimeSinceStartup
+            float playTime = Time.realtimeSinceStartup;
+            int hours = (int)(playTime / 3600);
+            int minutes = (int)((playTime % 3600) / 60);
+            return $"{hours}h {minutes}m";
+        }
+
+        private int GetPrestigeLevel()
+        {
+            if (GameManager.Instance?.prestigeManager != null)
+                return GameManager.Instance.prestigeManager.GetPrestigeLevel();
+            return 0;
+        }
+
+        private string GetFormattedNumber(double number)
+        {
+            if (number >= 1000000000000) return (number / 1000000000000).ToString("F1") + "T";
+            if (number >= 1000000000) return (number / 1000000000).ToString("F1") + "B";
+            if (number >= 1000000) return (number / 1000000).ToString("F1") + "M";
+            if (number >= 1000) return (number / 1000).ToString("F1") + "K";
+            return number.ToString("F0");
+        }
+
+        private void ClaimDailyReward()
+        {
+            // Add daily reward logic
+            if (GameManager.Instance?.resourceManager != null)
+            {
+                GameManager.Instance.resourceManager.AddResource(PotatoFarm.Core.ResourceType.Potatoes, 500);
+                GameManager.Instance.resourceManager.AddResource(PotatoFarm.Core.ResourceType.Cash, 100);
+                Debug.Log("Daily reward claimed: +500 Potatoes, +$100!");
+            }
+        }
+
+        private void ShareProgress()
+        {
+            Debug.Log("Sharing progress to social media...");
+            // This would integrate with platform-specific sharing APIs
+        }
+
+        private void InviteFriends()
+        {
+            Debug.Log("Opening friend invitation system...");
+            // This would integrate with platform-specific invitation systems
         }
 
         private TextMeshProUGUI CreateText(GameObject parent, string text)
