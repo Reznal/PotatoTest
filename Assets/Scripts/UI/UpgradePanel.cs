@@ -64,7 +64,7 @@ namespace PotatoFarm.UI
         private void CreateUpgradeItem(Upgrade upgrade, int index)
         {
             GameObject item = new GameObject($"Upgrade_{index}");
-            item.transform.SetParent(upgradeListParent);
+            item.transform.SetParent(upgradeListParent, false);
             upgradeItems.Add(item);
 
             // Add layout components
@@ -81,7 +81,7 @@ namespace PotatoFarm.UI
 
             // Upgrade info
             var infoPanel = new GameObject("Info");
-            infoPanel.transform.SetParent(item.transform);
+            infoPanel.transform.SetParent(item.transform, false);
             var infoLayout = infoPanel.AddComponent<LayoutElement>();
             infoLayout.preferredWidth = 300;
 
@@ -151,12 +151,21 @@ namespace PotatoFarm.UI
         private TextMeshProUGUI CreateText(GameObject parent, string text)
         {
             var textObj = new GameObject("Text");
-            textObj.transform.SetParent(parent.transform);
+            textObj.transform.SetParent(parent.transform, false);
 
             var textComponent = textObj.AddComponent<TextMeshProUGUI>();
             textComponent.text = text;
             textComponent.fontSize = 14;
             textComponent.color = Color.white;
+
+            // Properly configure RectTransform for text
+            var rectTransform = textObj.GetComponent<RectTransform>();
+            rectTransform.localScale = Vector3.one;
+            rectTransform.localPosition = Vector3.zero;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
 
             return textComponent;
         }
@@ -164,7 +173,7 @@ namespace PotatoFarm.UI
         private Button CreateButton(GameObject parent, string text)
         {
             var buttonObj = new GameObject("Button");
-            buttonObj.transform.SetParent(parent.transform);
+            buttonObj.transform.SetParent(parent.transform, false);
 
             var image = buttonObj.AddComponent<Image>();
             image.color = new Color(0.2f, 0.3f, 0.8f, 1f);
@@ -176,7 +185,7 @@ namespace PotatoFarm.UI
             buttonLayout.preferredHeight = 40;
 
             var textObj = new GameObject("Text");
-            textObj.transform.SetParent(buttonObj.transform);
+            textObj.transform.SetParent(buttonObj.transform, false);
 
             var textComponent = textObj.AddComponent<TextMeshProUGUI>();
             textComponent.text = text;

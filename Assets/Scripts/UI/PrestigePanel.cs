@@ -44,7 +44,7 @@ namespace PotatoFarm.UI
 
             // Current stats panel
             var statsPanel = new GameObject("StatsPanel");
-            statsPanel.transform.SetParent(prestigeContentParent);
+            statsPanel.transform.SetParent(prestigeContentParent, false);
             
             var statsBackground = statsPanel.AddComponent<Image>();
             statsBackground.color = new Color(0.1f, 0.1f, 0.2f, 0.8f);
@@ -77,13 +77,13 @@ namespace PotatoFarm.UI
 
             // Spacer
             var spacer = new GameObject("Spacer");
-            spacer.transform.SetParent(prestigeContentParent);
+            spacer.transform.SetParent(prestigeContentParent, false);
             var spacerLayout = spacer.AddComponent<LayoutElement>();
             spacerLayout.preferredHeight = 20;
 
             // Prestige action panel
             var actionPanel = new GameObject("ActionPanel");
-            actionPanel.transform.SetParent(prestigeContentParent);
+            actionPanel.transform.SetParent(prestigeContentParent, false);
             
             var actionBackground = actionPanel.AddComponent<Image>();
             actionBackground.color = new Color(0.2f, 0.1f, 0.1f, 0.8f);
@@ -106,7 +106,7 @@ namespace PotatoFarm.UI
 
             // Prestige button
             var buttonObj = new GameObject("PrestigeButton");
-            buttonObj.transform.SetParent(actionPanel.transform);
+            buttonObj.transform.SetParent(actionPanel.transform, false);
 
             var buttonImage = buttonObj.AddComponent<Image>();
             buttonImage.color = new Color(0.8f, 0.2f, 0.2f, 1f);
@@ -134,13 +134,13 @@ namespace PotatoFarm.UI
 
             // Spacer
             var spacer2 = new GameObject("Spacer2");
-            spacer2.transform.SetParent(prestigeContentParent);
+            spacer2.transform.SetParent(prestigeContentParent, false);
             var spacer2Layout = spacer2.AddComponent<LayoutElement>();
             spacer2Layout.preferredHeight = 20;
 
             // Benefits explanation
             var benefitsPanel = new GameObject("BenefitsPanel");
-            benefitsPanel.transform.SetParent(prestigeContentParent);
+            benefitsPanel.transform.SetParent(prestigeContentParent, false);
             
             var benefitsBackground = benefitsPanel.AddComponent<Image>();
             benefitsBackground.color = new Color(0.1f, 0.2f, 0.1f, 0.8f);
@@ -170,12 +170,21 @@ namespace PotatoFarm.UI
         private TextMeshProUGUI CreateText(GameObject parent, string text)
         {
             var textObj = new GameObject("Text");
-            textObj.transform.SetParent(parent.transform);
+            textObj.transform.SetParent(parent.transform, false);
 
             var textComponent = textObj.AddComponent<TextMeshProUGUI>();
             textComponent.text = text;
             textComponent.fontSize = 14;
             textComponent.color = Color.white;
+
+            // Properly configure RectTransform for text
+            var rectTransform = textObj.GetComponent<RectTransform>();
+            rectTransform.localScale = Vector3.one;
+            rectTransform.localPosition = Vector3.zero;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
 
             return textComponent;
         }
