@@ -645,6 +645,44 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3333333332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3333333330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd2b32170976e8d4fba2529146bba697, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCanvas: {fileID: 1111111112}
+  resourcePanel: {fileID: 0}
+  potatoCountText: {fileID: 0}
+  cashCountText: {fileID: 0}
+  starchCountText: {fileID: 0}
+  goldenPotatoCountText: {fileID: 0}
+  potatoRateText: {fileID: 0}
+  cashRateText: {fileID: 0}
+  tapFarmPanel: {fileID: 0}
+  tapButton: {fileID: 0}
+  tapPowerText: {fileID: 0}
+  farmImage: {fileID: 0}
+  navigationPanel: {fileID: 0}
+  farmsButton: {fileID: 0}
+  upgradesButton: {fileID: 0}
+  processingButton: {fileID: 0}
+  prestigeButton: {fileID: 0}
+  communityButton: {fileID: 0}
+  farmsPanel: {fileID: 0}
+  upgradesPanel: {fileID: 0}
+  processingPanel: {fileID: 0}
+  prestigePanel: {fileID: 0}
+  communityPanel: {fileID: 0}
+  eventsPanel: {fileID: 0}
+  eventListParent: {fileID: 0}
+  eventItemPrefab: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
