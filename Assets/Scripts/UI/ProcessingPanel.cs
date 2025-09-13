@@ -146,15 +146,19 @@ namespace PotatoFarm.UI
                     upgradeButton.interactable = true;
                     upgradeButton.GetComponent<Image>().color = new Color(0.2f, 0.8f, 0.2f, 1f);
                     upgradeButton.onClick.AddListener(() => {
+                        Debug.Log($"Upgrade button clicked for building {index}. Current cash: ${GameManager.Instance.resourceManager.GetResource(ResourceType.Cash):F0}, Upgrade cost: ${building.GetUpgradeCost():F0}");
+                        bool canAfford = GameManager.Instance.resourceManager.CanAfford(ResourceType.Cash, building.GetUpgradeCost());
+                        Debug.Log($"Can afford upgrade: {canAfford}");
+                        
                         bool success = GameManager.Instance.processingManager.UpgradeBuilding(index);
                         if (success)
                         {
-                            Debug.Log($"Successfully upgraded processing building {index}");
+                            Debug.Log($"Successfully upgraded processing building {index} to level {building.level}");
                             RefreshProcessingList(); // Refresh only on structural change
                         }
                         else
                         {
-                            Debug.Log($"Failed to upgrade processing building {index}");
+                            Debug.Log($"Failed to upgrade processing building {index}. Reason: Not enough cash or building not unlocked");
                         }
                     });
                 }

@@ -27,7 +27,9 @@ namespace PotatoFarm.Systems
         
         public double GetUpgradeCost()
         {
-            return cost * Math.Pow(costMultiplier, level);
+            double upgradeCost = cost * Math.Pow(costMultiplier, level);
+            Debug.Log($"GetUpgradeCost for {name}: base cost={cost}, level={level}, multiplier={costMultiplier}, result=${upgradeCost:F0}");
+            return upgradeCost;
         }
         
         public double GetEfficiency()
@@ -194,18 +196,36 @@ namespace PotatoFarm.Systems
         
         public bool UpgradeBuilding(int buildingIndex)
         {
-            if (buildingIndex < 0 || buildingIndex >= buildings.Count) return false;
+            Debug.Log($"UpgradeBuilding called for index {buildingIndex}");
+            
+            if (buildingIndex < 0 || buildingIndex >= buildings.Count) 
+            {
+                Debug.Log($"Invalid building index: {buildingIndex}. Building count: {buildings.Count}");
+                return false;
+            }
             
             var building = buildings[buildingIndex];
-            if (!building.isUnlocked) return false;
+            if (!building.isUnlocked) 
+            {
+                Debug.Log($"Building {buildingIndex} ({building.name}) is not unlocked");
+                return false;
+            }
             
             double cost = building.GetUpgradeCost();
+            double currentCash = GameManager.Instance.resourceManager.GetResource(PotatoFarm.Core.ResourceType.Cash);
+            
+            Debug.Log($"Attempting to upgrade {building.name} from level {building.level} to {building.level + 1}. Cost: ${cost:F0}, Current cash: ${currentCash:F0}");
             
             if (GameManager.Instance.resourceManager.SpendResource(PotatoFarm.Core.ResourceType.Cash, cost))
             {
                 building.level++;
+                Debug.Log($"Successfully upgraded {building.name} to level {building.level}");
                 OnBuildingUpgraded?.Invoke(buildingIndex);
                 return true;
+            }
+            else
+            {
+                Debug.Log($"Failed to spend ${cost:F0} for upgrade. Current cash: ${currentCash:F0}");
             }
             
             return false;
