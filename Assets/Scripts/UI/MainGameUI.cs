@@ -327,9 +327,25 @@ namespace PotatoFarm.UI
             rect.localScale = Vector3.one;
             rect.localPosition = Vector3.zero;
             
-            // Create content
+            // Create viewport (proper Unity ScrollView structure)
+            GameObject viewport = new GameObject("Viewport");
+            viewport.transform.SetParent(scrollView.transform, false);
+            
+            var viewportRect = viewport.AddComponent<RectTransform>();
+            viewportRect.anchorMin = Vector2.zero;
+            viewportRect.anchorMax = Vector2.one;
+            viewportRect.offsetMin = Vector2.zero;
+            viewportRect.offsetMax = Vector2.zero;
+            viewportRect.localScale = Vector3.one;
+            viewportRect.localPosition = Vector3.zero;
+            
+            // Add Mask component to viewport for proper clipping
+            viewport.AddComponent<Mask>().showMaskGraphic = false;
+            viewport.AddComponent<Image>().color = Color.clear;
+            
+            // Create content as child of viewport
             GameObject content = new GameObject("Content");
-            content.transform.SetParent(scrollView.transform, false);
+            content.transform.SetParent(viewport.transform, false);
             
             // Ensure the content has a RectTransform component
             var contentRect = content.GetComponent<RectTransform>();
@@ -337,6 +353,9 @@ namespace PotatoFarm.UI
             {
                 contentRect = content.AddComponent<RectTransform>();
             }
+            contentRect.anchorMin = new Vector2(0, 1);
+            contentRect.anchorMax = new Vector2(1, 1);
+            contentRect.pivot = new Vector2(0.5f, 1);
             contentRect.localScale = Vector3.one;
             contentRect.localPosition = Vector3.zero;
             
@@ -350,6 +369,8 @@ namespace PotatoFarm.UI
             var contentSizeFitter = content.AddComponent<ContentSizeFitter>();
             contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             
+            // Configure ScrollRect with proper viewport and content references
+            scrollRect.viewport = viewportRect;
             scrollRect.content = contentRect;
             scrollRect.vertical = true;
             scrollRect.horizontal = false;
