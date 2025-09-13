@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using PotatoFarm.Core;
 using System.Collections.Generic;
+using PotatoFarm.Systems;
 
 namespace PotatoFarm.UI
 {
@@ -124,7 +125,7 @@ namespace PotatoFarm.UI
                 
                 var progressRect = progressBar.rectTransform;
                 progressRect.anchorMin = Vector2.zero;
-                progressRect.anchorMax = new Vector2(building.GetProcessingProgress(), 1f);
+                progressRect.anchorMax = new Vector2((float)building.GetProcessingProgress(), 1f);
                 progressRect.offsetMin = Vector2.zero;
                 progressRect.offsetMax = Vector2.zero;
             }
