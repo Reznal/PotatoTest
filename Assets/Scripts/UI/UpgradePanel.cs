@@ -67,64 +67,42 @@ namespace PotatoFarm.UI
             item.transform.SetParent(upgradeListParent, false);
             upgradeItems.Add(item);
 
-            // Add layout components
-            var layoutElement = item.AddComponent<LayoutElement>();
-            layoutElement.preferredHeight = 120;
+            // Add background to show it's a separate item
+            var backgroundImage = item.AddComponent<Image>();
+            backgroundImage.color = new Color(0.15f, 0.25f, 0.15f, 0.8f); // Dark green background for upgrades
 
-            var horizontalLayout = item.AddComponent<HorizontalLayoutGroup>();
-            horizontalLayout.childControlWidth = false;
-            horizontalLayout.childControlHeight = true;
-            horizontalLayout.childForceExpandWidth = false;
-            horizontalLayout.childForceExpandHeight = false;
-            horizontalLayout.spacing = 10;
-            horizontalLayout.padding = new RectOffset(10, 10, 10, 10);
-
-            // Upgrade info
-            var infoPanel = new GameObject("Info");
-            infoPanel.transform.SetParent(item.transform, false);
-            var infoLayout = infoPanel.AddComponent<LayoutElement>();
-            infoLayout.preferredWidth = 300;
-
-            var infoVertical = infoPanel.AddComponent<VerticalLayoutGroup>();
-            infoVertical.childControlWidth = true;
-            infoVertical.childControlHeight = false;
-            infoVertical.childForceExpandWidth = true;
-            infoVertical.spacing = 2;
+            // The GridLayoutGroup on the parent will handle sizing (350x250)
+            // Use vertical layout for internal organization
+            var verticalLayout = item.AddComponent<VerticalLayoutGroup>();
+            verticalLayout.childControlWidth = true;
+            verticalLayout.childControlHeight = false;
+            verticalLayout.childForceExpandWidth = true;
+            verticalLayout.spacing = 5;
+            verticalLayout.padding = new RectOffset(12, 12, 12, 12);
 
             // Upgrade name
-            var nameText = CreateText(infoPanel, upgrade.name);
+            var nameText = CreateText(item, upgrade.name);
             nameText.fontSize = 16;
             nameText.fontStyle = FontStyles.Bold;
 
             // Upgrade description
-            var descText = CreateText(infoPanel, upgrade.description);
-            descText.fontSize = 12;
+            var descText = CreateText(item, upgrade.description);
+            descText.fontSize = 11;
             descText.color = new Color(0.8f, 0.8f, 0.8f, 1f);
 
             // Upgrade level and effect
-            var levelText = CreateText(infoPanel, $"Level: {upgrade.level}");
-            var effectText = CreateText(infoPanel, $"Effect: {upgrade.GetCurrentEffect():F1}x");
-
-            // Cost and button panel
-            var actionPanel = new GameObject("Actions");
-            actionPanel.transform.SetParent(item.transform);
-            var actionLayout = actionPanel.AddComponent<LayoutElement>();
-            actionLayout.preferredWidth = 150;
-
-            var actionVertical = actionPanel.AddComponent<VerticalLayoutGroup>();
-            actionVertical.childControlWidth = true;
-            actionVertical.childControlHeight = false;
-            actionVertical.childForceExpandWidth = true;
-            actionVertical.spacing = 5;
+            var levelText = CreateText(item, $"Level: {upgrade.level}");
+            var effectText = CreateText(item, $"Effect: {upgrade.GetCurrentEffect():F1}x");
 
             // Cost display
-            var costText = CreateText(actionPanel, $"Cost: ${upgrade.GetCurrentCost():F0}");
+            var costText = CreateText(item, $"Cost: ${upgrade.GetCurrentCost():F0}");
             costText.fontSize = 14;
             costText.fontStyle = FontStyles.Bold;
+            costText.color = Color.yellow;
 
             // Purchase button
             bool canAfford = GameManager.Instance.resourceManager.CanAfford(ResourceType.Cash, upgrade.GetCurrentCost());
-            var purchaseButton = CreateButton(actionPanel, upgrade.isMaxed ? "MAXED" : "BUY");
+            var purchaseButton = CreateButton(item, upgrade.isMaxed ? "MAXED" : "BUY");
             
             if (upgrade.isMaxed)
             {
@@ -142,10 +120,6 @@ namespace PotatoFarm.UI
                 purchaseButton.GetComponent<Image>().color = new Color(0.2f, 0.8f, 0.2f, 1f);
                 purchaseButton.onClick.AddListener(() => GameManager.Instance.upgradeManager.PurchaseUpgrade(index));
             }
-
-            // Background
-            var background = item.AddComponent<Image>();
-            background.color = new Color(0.1f, 0.1f, 0.1f, 0.7f);
         }
 
         private TextMeshProUGUI CreateText(GameObject parent, string text)
