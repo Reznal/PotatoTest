@@ -266,9 +266,11 @@ namespace PotatoFarm.UI
 
             var button = buttonObj.AddComponent<Button>();
             button.targetGraphic = image;
+            button.interactable = true; // Explicitly enable interaction
 
             var buttonLayout = buttonObj.AddComponent<LayoutElement>();
             buttonLayout.preferredHeight = 15; // Reduced to 1/3 of original height (40/3 ≈ 13-15)
+            buttonLayout.flexibleHeight = 0; // Prevent flexible expansion
 
             var textObj = new GameObject("Text");
             textObj.transform.SetParent(buttonObj.transform, false);

@@ -161,6 +161,7 @@ namespace PotatoFarm.UI
 
                 // Start/Stop processing button
                 var processButton = CreateButton(buttonArea, building.isProcessing ? "STOP" : "START");
+                processButton.interactable = true; // Explicitly enable interaction
                 processButton.GetComponent<Image>().color = building.isProcessing ? 
                     new Color(0.8f, 0.2f, 0.2f, 1f) : 
                     new Color(0.2f, 0.8f, 0.2f, 1f);
@@ -242,6 +243,7 @@ namespace PotatoFarm.UI
 
             var button = buttonObj.AddComponent<Button>();
             button.targetGraphic = image;
+            button.interactable = true; // Explicitly enable interaction
 
             var buttonLayout = buttonObj.AddComponent<LayoutElement>();
             buttonLayout.preferredHeight = 35;
