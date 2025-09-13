@@ -60,7 +60,8 @@ namespace PotatoFarm.UI
             Debug.Log("MainGameUI Start() called");
             SetupMainUI();
             SubscribeToEvents();
-            ShowPanel(farmsPanel);
+            // Don't show any panel by default - let user choose
+            // ShowPanel(farmsPanel);
             Debug.Log($"MainGameUI setup complete. Canvas: {mainCanvas?.name}, TapButton: {tapButton != null}");
         }
         
@@ -143,13 +144,14 @@ namespace PotatoFarm.UI
         private GameObject CreatePanel(string name, Transform parent)
         {
             GameObject panel = new GameObject(name);
-            panel.transform.SetParent(parent);
+            panel.transform.SetParent(parent, false);
             
             var image = panel.AddComponent<Image>();
             image.color = new Color(0.1f, 0.1f, 0.1f, 0.8f);
             
             var rect = panel.GetComponent<RectTransform>();
             rect.localScale = Vector3.one;
+            rect.localPosition = Vector3.zero;
             
             return panel;
         }
@@ -179,7 +181,7 @@ namespace PotatoFarm.UI
         private TextMeshProUGUI CreateResourceText(GameObject parent, string text)
         {
             GameObject textObj = new GameObject("ResourceText");
-            textObj.transform.SetParent(parent.transform);
+            textObj.transform.SetParent(parent.transform, false);
             
             var textComponent = textObj.AddComponent<TextMeshProUGUI>();
             textComponent.text = text;
@@ -190,6 +192,7 @@ namespace PotatoFarm.UI
             // Properly configure RectTransform for text
             var rectTransform = textObj.GetComponent<RectTransform>();
             rectTransform.localScale = Vector3.one;
+            rectTransform.localPosition = Vector3.zero;
             rectTransform.anchorMin = Vector2.zero;
             rectTransform.anchorMax = Vector2.one;
             rectTransform.offsetMin = Vector2.zero;
@@ -291,10 +294,17 @@ namespace PotatoFarm.UI
         {
             GameObject panel = CreatePanel(name, mainCanvas.transform);
             var rect = panel.GetComponent<RectTransform>();
+            
+            // Set the panel to fill the center area between navigation and resource panels
             rect.anchorMin = new Vector2(0, 0.15f);
             rect.anchorMax = new Vector2(1, 0.85f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
+            rect.localScale = Vector3.one;
+            rect.localPosition = Vector3.zero;
+            
+            // Ensure proper layering
+            panel.transform.SetAsLastSibling();
             
             panel.SetActive(false);
             return panel;
@@ -303,7 +313,7 @@ namespace PotatoFarm.UI
         private void AddScrollViewToPanel(GameObject panel)
         {
             GameObject scrollView = new GameObject("ScrollView");
-            scrollView.transform.SetParent(panel.transform);
+            scrollView.transform.SetParent(panel.transform, false);
             
             var scrollRect = scrollView.AddComponent<ScrollRect>();
             scrollView.AddComponent<Image>().color = new Color(0, 0, 0, 0.1f);
@@ -313,12 +323,17 @@ namespace PotatoFarm.UI
             rect.anchorMax = Vector2.one;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
+            rect.localScale = Vector3.one;
+            rect.localPosition = Vector3.zero;
             
             // Create content
             GameObject content = new GameObject("Content");
-            content.transform.SetParent(scrollView.transform);
+            content.transform.SetParent(scrollView.transform, false);
             
             var contentRect = content.GetComponent<RectTransform>();
+            contentRect.localScale = Vector3.one;
+            contentRect.localPosition = Vector3.zero;
+            
             var verticalLayout = content.AddComponent<VerticalLayoutGroup>();
             verticalLayout.childControlWidth = true;
             verticalLayout.childControlHeight = false;
@@ -492,10 +507,21 @@ namespace PotatoFarm.UI
         {
             Debug.Log($"ShowPanel called for: {panel?.name}");
             
+            // If clicking the same panel that's already active, close it
+            if (currentActivePanel == panel && panel != null && panel.activeSelf)
+            {
+                panel.SetActive(false);
+                currentActivePanel = null;
+                UpdateNavigationButtonColors(null);
+                Debug.Log($"Closed panel: {panel.name}");
+                return;
+            }
+            
             // Hide current panel
             if (currentActivePanel != null)
             {
                 currentActivePanel.SetActive(false);
+                Debug.Log($"Hiding previous panel: {currentActivePanel.name}");
             }
             
             // Show new panel
@@ -503,6 +529,17 @@ namespace PotatoFarm.UI
             {
                 panel.SetActive(true);
                 currentActivePanel = panel;
+                
+                // Ensure panel is properly positioned and visible
+                var rect = panel.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0, 0.15f);
+                rect.anchorMax = new Vector2(1, 0.85f);
+                rect.offsetMin = Vector2.zero;
+                rect.offsetMax = Vector2.zero;
+                rect.localScale = Vector3.one;
+                rect.localPosition = Vector3.zero;
+                
+                Debug.Log($"Showing panel: {panel.name}");
             }
             
             // Update button colors
@@ -518,7 +555,7 @@ namespace PotatoFarm.UI
             SetButtonColor(prestigeButton, inactiveButtonColor);
             SetButtonColor(communityButton, inactiveButtonColor);
             
-            // Set active button color
+            // Set active button color only if there's an active panel
             if (activePanel == farmsPanel)
                 SetButtonColor(farmsButton, activeButtonColor);
             else if (activePanel == upgradesPanel)
