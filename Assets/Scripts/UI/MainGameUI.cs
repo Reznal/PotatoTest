@@ -33,6 +33,7 @@ namespace PotatoFarm.UI
         public GameObject processorControlPanel;
         public Button processorToggleButton;
         public TextMeshProUGUI processorStatusText;
+        public GameObject processorListContainer;
         
         [Header("Navigation")]
         public GameObject navigationPanel;
@@ -59,6 +60,7 @@ namespace PotatoFarm.UI
         public Color inactiveButtonColor = Color.gray;
         
         private GameObject currentActivePanel;
+        private List<GameObject> processorDisplayItems = new List<GameObject>();
         
         private void Start()
         {
@@ -290,11 +292,16 @@ namespace PotatoFarm.UI
             buttonText.fontStyle = FontStyles.Bold;
             buttonText.alignment = TextAlignmentOptions.Center;
             
-            // Status text
-            processorStatusText = CreateResourceText(processorControlPanel, "0 Active");
-            processorStatusText.fontSize = 12;
-            processorStatusText.alignment = TextAlignmentOptions.Center;
-            processorStatusText.color = Color.yellow;
+            // Create container for individual processor displays
+            processorListContainer = new GameObject("ProcessorListContainer");
+            processorListContainer.transform.SetParent(processorControlPanel.transform, false);
+            
+            var containerLayout = processorListContainer.AddComponent<VerticalLayoutGroup>();
+            containerLayout.childControlWidth = true;
+            containerLayout.childControlHeight = false;
+            containerLayout.childForceExpandWidth = true;
+            containerLayout.spacing = 5;
+            containerLayout.padding = new RectOffset(0, 0, 0, 0);
         }
         
         private void CreateNavigationButtons()
@@ -613,11 +620,10 @@ namespace PotatoFarm.UI
         
         private void UpdateProcessorControlDisplay()
         {
-            if (GameManager.Instance?.processingManager == null) return;
+            if (GameManager.Instance?.processingManager == null || processorListContainer == null) return;
             
             var pm = GameManager.Instance.processingManager;
             bool anyRunning = pm.AreAnyProcessorsRunning();
-            int activeCount = pm.GetActiveProcessorCount();
             
             // Update button color and text
             if (processorToggleButton != null && processorToggleButton.targetGraphic is Image buttonImage)
@@ -633,11 +639,91 @@ namespace PotatoFarm.UI
                 }
             }
             
-            // Update status text
-            if (processorStatusText != null)
+            // Clear existing processor displays
+            foreach (var item in processorDisplayItems)
             {
-                processorStatusText.text = $"{activeCount} Active";
+                if (item != null)
+                    Destroy(item);
             }
+            processorDisplayItems.Clear();
+            
+            // Create individual processor displays for active processors
+            int buildingCount = pm.GetBuildingCount();
+            for (int i = 0; i < buildingCount; i++)
+            {
+                var building = pm.GetBuilding(i);
+                if (building != null && building.isUnlocked && building.level > 0 && building.isProcessing)
+                {
+                    CreateProcessorDisplayItem(building);
+                }
+            }
+        }
+        
+        private void CreateProcessorDisplayItem(ProcessingBuilding building)
+        {
+            GameObject item = new GameObject($"ProcessorDisplay_{building.name}");
+            item.transform.SetParent(processorListContainer.transform, false);
+            
+            // Add background for the processor item
+            var bgImage = item.AddComponent<Image>();
+            bgImage.color = new Color(0.2f, 0.2f, 0.3f, 0.8f);
+            
+            // Set layout element for consistent sizing
+            var layoutElement = item.AddComponent<LayoutElement>();
+            layoutElement.preferredHeight = 25;
+            
+            // Use horizontal layout for name and progress bar
+            var horizontalLayout = item.AddComponent<HorizontalLayoutGroup>();
+            horizontalLayout.childControlWidth = false;
+            horizontalLayout.childControlHeight = true;
+            horizontalLayout.childForceExpandWidth = false;
+            horizontalLayout.childForceExpandHeight = true;
+            horizontalLayout.spacing = 5;
+            horizontalLayout.padding = new RectOffset(5, 5, 2, 2);
+            
+            // Processor name text
+            GameObject nameTextObj = new GameObject("ProcessorName");
+            nameTextObj.transform.SetParent(item.transform, false);
+            
+            var nameText = nameTextObj.AddComponent<TextMeshProUGUI>();
+            nameText.text = building.name;
+            nameText.fontSize = 10;
+            nameText.color = Color.white;
+            nameText.alignment = TextAlignmentOptions.MidlineLeft;
+            
+            var nameLayout = nameTextObj.AddComponent<LayoutElement>();
+            nameLayout.preferredWidth = 80;
+            nameLayout.flexibleWidth = 0;
+            
+            // Progress bar container
+            GameObject progressContainer = new GameObject("ProgressContainer");
+            progressContainer.transform.SetParent(item.transform, false);
+            
+            var progressLayout = progressContainer.AddComponent<LayoutElement>();
+            progressLayout.flexibleWidth = 1;
+            progressLayout.preferredHeight = 10;
+            
+            // Progress bar background
+            var progressBg = progressContainer.AddComponent<Image>();
+            progressBg.color = new Color(0.1f, 0.1f, 0.1f, 1f);
+            
+            // Progress bar fill
+            GameObject progressFill = new GameObject("ProgressFill");
+            progressFill.transform.SetParent(progressContainer.transform, false);
+            
+            var progressFillImage = progressFill.AddComponent<Image>();
+            progressFillImage.color = new Color(0.2f, 0.8f, 0.2f, 1f);
+            progressFillImage.type = Image.Type.Filled;
+            progressFillImage.fillMethod = Image.FillMethod.Horizontal;
+            progressFillImage.fillAmount = (float)building.GetProcessingProgress();
+            
+            var progressRect = progressFillImage.rectTransform;
+            progressRect.anchorMin = Vector2.zero;
+            progressRect.anchorMax = Vector2.one;
+            progressRect.offsetMin = Vector2.zero;
+            progressRect.offsetMax = Vector2.zero;
+            
+            processorDisplayItems.Add(item);
         }
         
         private void OnResourceChanged(ResourceType type, double amount)

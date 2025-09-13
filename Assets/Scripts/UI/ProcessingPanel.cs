@@ -105,7 +105,7 @@ namespace PotatoFarm.UI
                 progressBg.color = new Color(0.2f, 0.2f, 0.2f, 1f);
                 
                 var progressLayout = progressObj.AddComponent<LayoutElement>();
-                progressLayout.preferredHeight = 15;
+                progressLayout.preferredHeight = 10;
                 
                 var progressBarObj = new GameObject("ProgressBar");
                 progressBarObj.transform.SetParent(progressObj.transform, false);
