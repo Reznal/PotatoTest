@@ -330,7 +330,12 @@ namespace PotatoFarm.UI
             GameObject content = new GameObject("Content");
             content.transform.SetParent(scrollView.transform, false);
             
+            // Ensure the content has a RectTransform component
             var contentRect = content.GetComponent<RectTransform>();
+            if (contentRect == null)
+            {
+                contentRect = content.AddComponent<RectTransform>();
+            }
             contentRect.localScale = Vector3.one;
             contentRect.localPosition = Vector3.zero;
             
